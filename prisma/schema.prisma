@@ -1,0 +1,154 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  username     String    @unique
+  passwordHash String
+  fullName     String
+  position     String
+  role         String
+  isActive     Boolean   @default(true)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  disbursementsCreated Disbursement[]   @relation("CreatedBy")
+  workflowActions      WorkflowAction[]
+  sessions             Session[]
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    Int
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model BudgetType {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  code      String   @unique
+  parentId  Int?
+  isActive  Boolean  @default(true)
+  sortOrder Int      @default(0)
+
+  parent   BudgetType?  @relation("SubTypes", fields: [parentId], references: [id])
+  children BudgetType[] @relation("SubTypes")
+
+  disbursements  Disbursement[]
+  balanceEntries BalanceEntry[]
+}
+
+model Disbursement {
+  id              Int      @id @default(autoincrement())
+  sequenceNumber  Int?
+  fiscalYear      Int
+  requestDate     DateTime
+  memoNumber      String?
+  budgetTypeId    Int
+  description     String
+  amount          Float
+  taxWithheld     Float    @default(0)
+  netAmount       Float
+  note            String?
+
+  currentStep     Int      @default(1)
+  status          String   @default("DRAFT")
+
+  payeeName       String?
+  payeeTaxId      String?
+  payeeAddress    String?
+
+  createdById     Int
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  budgetType      BudgetType       @relation(fields: [budgetTypeId], references: [id])
+  createdBy       User             @relation("CreatedBy", fields: [createdById], references: [id])
+  workflowActions WorkflowAction[]
+  taxCertificate  TaxCertificate?
+}
+
+model WorkflowAction {
+  id              Int      @id @default(autoincrement())
+  disbursementId  Int
+  stepNumber      Int
+  stepName        String
+  action          String
+  comment         String?
+  performedById   Int
+  performedAt     DateTime @default(now())
+
+  disbursement Disbursement @relation(fields: [disbursementId], references: [id])
+  performedBy  User         @relation(fields: [performedById], references: [id])
+
+  @@index([disbursementId, stepNumber])
+}
+
+model TaxCertificate {
+  id               Int      @id @default(autoincrement())
+  disbursementId   Int      @unique
+  certificateNo    String?
+  payeeName        String
+  payeeTaxId       String?
+  payeeAddress     String?
+  paymentDate      DateTime
+  paymentType      String
+  amountPaid       Float
+  taxWithheld      Float
+  taxRate          Float    @default(1)
+  fiscalYear       Int
+  createdAt        DateTime @default(now())
+
+  disbursement Disbursement @relation(fields: [disbursementId], references: [id])
+}
+
+model BalanceReport {
+  id           Int      @id @default(autoincrement())
+  reportDate   DateTime
+  fiscalYear   Int
+  memoNumber   String?
+  note         String?
+  createdAt    DateTime @default(now())
+
+  entries BalanceEntry[]
+
+  @@unique([reportDate, fiscalYear])
+}
+
+model BalanceEntry {
+  id              Int   @id @default(autoincrement())
+  balanceReportId Int
+  budgetTypeId    Int
+  broughtForward  Float @default(0)
+  received        Float @default(0)
+  disbursed       Float @default(0)
+  balance         Float @default(0)
+
+  balanceReport BalanceReport @relation(fields: [balanceReportId], references: [id], onDelete: Cascade)
+  budgetType    BudgetType    @relation(fields: [budgetTypeId], references: [id])
+
+  @@unique([balanceReportId, budgetTypeId])
+}
+
+model TaxPaymentSummary {
+  id           Int       @id @default(autoincrement())
+  month        Int
+  year         Int
+  payeeName    String
+  totalPaid    Float
+  totalTax     Float
+  paidDate     DateTime?
+  receiptNo    String?
+  createdAt    DateTime  @default(now())
+
+  @@unique([month, year, payeeName])
+}
