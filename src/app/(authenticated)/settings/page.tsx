@@ -1,111 +1,108 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { ROLES } from '@/lib/constants'
+import { useRouter } from 'next/navigation'
+import { PageHeader } from '@/components/shared/PageHeader'
+import {
+  Landmark,
+  Tags,
+  GitBranch,
+  Users,
+  Shield,
+  ChevronRight,
+} from 'lucide-react'
 
-interface UserItem {
-  id: number
-  username: string
-  fullName: string
-  position: string
+interface UserInfo {
   role: string
-  isActive: boolean
-  createdAt: string
+}
+
+interface SettingsCard {
+  title: string
+  description: string
+  href: string
+  icon: React.ReactNode
+  adminOnly?: boolean
 }
 
 export default function SettingsPage() {
-  const [users, setUsers] = useState<UserItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const router = useRouter()
+  const [userRole, setUserRole] = useState<string | null>(null)
 
   useEffect(() => {
-    fetch('/api/users')
-      .then((res) => {
-        if (!res.ok) {
-          if (res.status === 403) throw new Error('ไม่มีสิทธิ์เข้าถึง')
-          throw new Error('เกิดข้อผิดพลาด')
-        }
-        return res.json()
-      })
-      .then((json) => {
-        if (Array.isArray(json)) setUsers(json)
-      })
-      .catch((err) => setError(err.message))
-      .finally(() => setLoading(false))
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data: UserInfo) => setUserRole(data.role))
+      .catch(() => setUserRole(null))
   }, [])
 
-  const getRoleName = (role: string): string => {
-    return ROLES[role as keyof typeof ROLES] ?? role
-  }
+  const cards: SettingsCard[] = [
+    {
+      title: 'บัญชีธนาคาร',
+      description: 'จัดการบัญชีธนาคารของโรงเรียน',
+      href: '/settings/bank-accounts',
+      icon: <Landmark size={24} />,
+    },
+    {
+      title: 'ประเภทเงิน',
+      description: 'จัดการประเภทเงินงบประมาณและนอกงบประมาณ',
+      href: '/settings/budget-types',
+      icon: <Tags size={24} />,
+    },
+    {
+      title: 'ตั้งค่า Workflow',
+      description: 'กำหนดขั้นตอนการอนุมัติเบิกจ่าย',
+      href: '/settings/workflow',
+      icon: <GitBranch size={24} />,
+    },
+    {
+      title: 'ผู้ใช้งาน',
+      description: 'จัดการบัญชีผู้ใช้งานระบบ',
+      href: '/settings/users',
+      icon: <Users size={24} />,
+      adminOnly: true,
+    },
+    {
+      title: 'สิทธิ์การใช้งาน',
+      description: 'กำหนดสิทธิ์การเข้าถึงของแต่ละบทบาท',
+      href: '/settings/permissions',
+      icon: <Shield size={24} />,
+      adminOnly: true,
+    },
+  ]
+
+  const visibleCards = cards.filter(
+    (card) => !card.adminOnly || userRole === 'ADMIN',
+  )
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">ตั้งค่าระบบ</h1>
-        <p className="text-sm text-gray-500 mt-1">จัดการผู้ใช้งานและการตั้งค่า</p>
-      </div>
+      <PageHeader
+        title="ตั้งค่าระบบ"
+        subtitle="จัดการการตั้งค่าต่าง ๆ ของระบบ"
+      />
 
-      {/* Users Section */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-        <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">ผู้ใช้งาน</h2>
-        </div>
-
-        {loading ? (
-          <div className="p-8 space-y-3">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />
-            ))}
-          </div>
-        ) : error ? (
-          <div className="p-12 text-center text-red-500">
-            {error}
-          </div>
-        ) : users.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-left text-gray-500">
-                  <th className="px-4 py-3 font-medium">ชื่อ-สกุล</th>
-                  <th className="px-4 py-3 font-medium">ตำแหน่ง</th>
-                  <th className="px-4 py-3 font-medium">บทบาท</th>
-                  <th className="px-4 py-3 font-medium text-center">สถานะ</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {users.map((user) => (
-                  <tr key={user.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-gray-900 font-medium">
-                      {user.fullName}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {user.position}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {getRoleName(user.role)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                          user.isActive
-                            ? 'bg-green-100 text-green-800'
-                            : 'bg-red-100 text-red-800'
-                        }`}
-                      >
-                        {user.isActive ? 'ใช้งาน' : 'ปิดการใช้งาน'}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="p-12 text-center text-gray-400">
-            ไม่พบข้อมูลผู้ใช้งาน
-          </div>
-        )}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {visibleCards.map((card) => (
+          <button
+            key={card.href}
+            onClick={() => router.push(card.href)}
+            className="flex items-center gap-4 p-5 bg-white rounded-xl shadow-sm border border-gray-200 hover:border-[#1e3a5f]/30 hover:shadow-md transition-all text-left group"
+          >
+            <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-[#1e3a5f]/10 flex items-center justify-center text-[#1e3a5f]">
+              {card.icon}
+            </div>
+            <div className="flex-1 min-w-0">
+              <h3 className="text-sm font-semibold text-[#1e3a5f]">
+                {card.title}
+              </h3>
+              <p className="text-xs text-gray-500 mt-0.5">{card.description}</p>
+            </div>
+            <ChevronRight
+              size={18}
+              className="text-gray-400 group-hover:text-[#1e3a5f] transition-colors flex-shrink-0"
+            />
+          </button>
+        ))}
       </div>
     </div>
   )

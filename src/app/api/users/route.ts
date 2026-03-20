@@ -8,7 +8,7 @@ export async function GET() {
     if (!session) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
     }
-    if (session.role !== 'PRINCIPAL') {
+    if (session.role !== 'PRINCIPAL' && session.role !== 'ADMIN') {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 

@@ -14,8 +14,8 @@ export default async function AuthenticatedLayout({
   }
 
   const userInfo = {
-    role: user.role,
     fullName: user.fullName,
+    role: user.role,
   }
 
   return <AuthenticatedShell user={userInfo}>{children}</AuthenticatedShell>

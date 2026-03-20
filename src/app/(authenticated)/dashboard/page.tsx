@@ -1,7 +1,10 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { Banknote, FileText, Clock, Receipt } from 'lucide-react'
 import { formatCurrency, getCurrentFiscalYear, formatShortDate } from '@/lib/utils'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { StatusBadge } from '@/components/shared/StatusBadge'
 import {
   PieChart,
   Pie,
@@ -26,7 +29,7 @@ interface DashboardData {
   recentItems: {
     id: number
     description: string
-    netAmount: number
+    totalAmount: number
     status: string
     requestDate: string
     budgetTypeName: string
@@ -34,8 +37,8 @@ interface DashboardData {
 }
 
 const PIE_COLORS = [
-  '#3b82f6', '#6366f1', '#8b5cf6', '#ec4899',
-  '#f59e0b', '#10b981', '#06b6d4', '#f97316',
+  '#1e3a5f', '#16a34a', '#3b82f6', '#8b5cf6',
+  '#f59e0b', '#06b6d4', '#ec4899', '#f97316',
 ]
 
 const MONTH_NAMES = [
@@ -43,42 +46,38 @@ const MONTH_NAMES = [
   'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.',
 ]
 
-const STATUS_LABELS: Record<string, string> = {
-  DRAFT: 'ร่าง',
-  PENDING_APPROVAL: 'รออนุมัติ',
-  APPROVED: 'อนุมัติแล้ว',
-  WITHDRAWN: 'เบิกเงินแล้ว',
-  PAID: 'จ่ายเงินแล้ว',
-  TAX_ISSUED: 'ออกใบ 50 ทวิแล้ว',
-  BALANCE_REPORTED: 'รายงานยอดแล้ว',
-  COMPLETED: 'เสร็จสิ้น',
-  REJECTED: 'ไม่อนุมัติ',
+interface StatCardData {
+  title: string
+  value: string
+  icon: React.ReactNode
+  bgColor: string
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const colors: Record<string, string> = {
-    DRAFT: 'bg-gray-100 text-gray-700',
-    PENDING_APPROVAL: 'bg-yellow-100 text-yellow-700',
-    APPROVED: 'bg-blue-100 text-blue-700',
-    WITHDRAWN: 'bg-indigo-100 text-indigo-700',
-    PAID: 'bg-purple-100 text-purple-700',
-    TAX_ISSUED: 'bg-pink-100 text-pink-700',
-    BALANCE_REPORTED: 'bg-teal-100 text-teal-700',
-    COMPLETED: 'bg-green-100 text-green-700',
-    REJECTED: 'bg-red-100 text-red-700',
-  }
+function DashboardSkeleton() {
   return (
-    <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium ${colors[status] ?? 'bg-gray-100 text-gray-700'}`}>
-      {STATUS_LABELS[status] ?? status}
-    </span>
-  )
-}
-
-function SkeletonCard() {
-  return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 animate-pulse">
-      <div className="h-4 bg-gray-200 rounded w-24 mb-3" />
-      <div className="h-8 bg-gray-200 rounded w-32" />
+    <div className="space-y-6">
+      <div className="h-10 animate-pulse bg-gray-200 rounded w-48" />
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <div key={i} className="rounded-xl p-5 animate-pulse bg-gray-200 h-28" />
+        ))}
+      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {Array.from({ length: 2 }).map((_, i) => (
+          <div key={i} className="bg-white rounded-xl shadow-sm border p-6 animate-pulse">
+            <div className="h-5 bg-gray-200 rounded w-40 mb-4" />
+            <div className="h-72 bg-gray-200 rounded" />
+          </div>
+        ))}
+      </div>
+      <div className="bg-white rounded-xl shadow-sm border p-6 animate-pulse">
+        <div className="h-5 bg-gray-200 rounded w-32 mb-4" />
+        <div className="space-y-3">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="h-10 bg-gray-200 rounded" />
+          ))}
+        </div>
+      </div>
     </div>
   )
 }
@@ -96,56 +95,34 @@ export default function DashboardPage() {
       .finally(() => setLoading(false))
   }, [fiscalYear])
 
-  const summaryCards = [
+  if (loading) {
+    return <DashboardSkeleton />
+  }
+
+  const statCards: StatCardData[] = [
     {
       title: 'ยอดเบิกจ่ายทั้งหมด',
-      value: data?.totalDisbursed ?? 0,
-      color: 'bg-blue-50 border-blue-200',
-      textColor: 'text-blue-700',
-      iconBg: 'bg-blue-500',
-      icon: (
-        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
+      value: `${formatCurrency(data?.totalDisbursed ?? 0)} บาท`,
+      icon: <Banknote size={24} className="text-white" />,
+      bgColor: 'bg-[#1e3a5f]',
     },
     {
       title: 'จำนวนรายการ',
-      value: data?.totalTransactions ?? 0,
-      color: 'bg-indigo-50 border-indigo-200',
-      textColor: 'text-indigo-700',
-      iconBg: 'bg-indigo-500',
-      icon: (
-        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-        </svg>
-      ),
-      isCurrency: false,
+      value: (data?.totalTransactions ?? 0).toLocaleString(),
+      icon: <FileText size={24} className="text-white" />,
+      bgColor: 'bg-[#3b82f6]',
     },
     {
       title: 'รอดำเนินการ',
-      value: data?.pendingCount ?? 0,
-      color: 'bg-yellow-50 border-yellow-200',
-      textColor: 'text-yellow-700',
-      iconBg: 'bg-yellow-500',
-      icon: (
-        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      ),
-      isCurrency: false,
+      value: (data?.pendingCount ?? 0).toLocaleString(),
+      icon: <Clock size={24} className="text-white" />,
+      bgColor: 'bg-[#f59e0b]',
     },
     {
       title: 'ภาษีหัก ณ ที่จ่าย',
-      value: data?.totalTaxWithheld ?? 0,
-      color: 'bg-pink-50 border-pink-200',
-      textColor: 'text-pink-700',
-      iconBg: 'bg-pink-500',
-      icon: (
-        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
-        </svg>
-      ),
+      value: `${formatCurrency(data?.totalTaxWithheld ?? 0)} บาท`,
+      icon: <Receipt size={24} className="text-white" />,
+      bgColor: 'bg-[#16a34a]',
     },
   ]
 
@@ -156,53 +133,37 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">แดชบอร์ด</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          ภาพรวมการเบิกจ่าย ปีงบประมาณ {fiscalYear}
-        </p>
-      </div>
+      <PageHeader
+        title="ภาพรวม"
+        subtitle={`ปีงบประมาณ ${fiscalYear}`}
+      />
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {loading
-          ? Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)
-          : summaryCards.map((card) => (
-              <div
-                key={card.title}
-                className={`rounded-xl shadow-sm border p-6 ${card.color}`}
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <div className={`${card.iconBg} rounded-lg p-2`}>
-                    {card.icon}
-                  </div>
-                  <span className="text-sm font-medium text-gray-600">
-                    {card.title}
-                  </span>
-                </div>
-                <p className={`text-2xl font-bold ${card.textColor}`}>
-                  {card.isCurrency === false
-                    ? card.value.toLocaleString()
-                    : formatCurrency(card.value)}
-                  {card.isCurrency !== false && (
-                    <span className="text-sm font-normal ml-1">บาท</span>
-                  )}
-                </p>
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+        {statCards.map((card) => (
+          <div
+            key={card.title}
+            className={`${card.bgColor} rounded-xl p-5 shadow-sm transition-shadow hover:shadow-md`}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-medium text-white/80">{card.title}</p>
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15">
+                {card.icon}
               </div>
-            ))}
+            </div>
+            <p className="text-2xl font-bold text-white font-mono">{card.value}</p>
+          </div>
+        ))}
       </div>
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Pie Chart - By Budget Type */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            สัดส่วนการเบิกจ่ายตามประเภทงบ
+        {/* Pie Chart */}
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <h2 className="text-base font-semibold text-[#1e3a5f] mb-4">
+            สัดส่วนตามประเภทเงิน
           </h2>
-          {loading ? (
-            <div className="h-72 bg-gray-100 rounded animate-pulse" />
-          ) : data?.byBudgetType && data.byBudgetType.length > 0 ? (
+          {data?.byBudgetType && data.byBudgetType.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie
@@ -236,14 +197,12 @@ export default function DashboardPage() {
           )}
         </div>
 
-        {/* Bar Chart - Monthly */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+        {/* Bar Chart */}
+        <div className="bg-white rounded-xl shadow-sm border p-6">
+          <h2 className="text-base font-semibold text-[#1e3a5f] mb-4">
             ยอดเบิกจ่ายรายเดือน
           </h2>
-          {loading ? (
-            <div className="h-72 bg-gray-100 rounded animate-pulse" />
-          ) : (
+          {monthlyData.length > 0 ? (
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={monthlyData}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -264,32 +223,30 @@ export default function DashboardPage() {
                     'ยอดเบิกจ่าย',
                   ]}
                 />
-                <Bar dataKey="amount" fill="#3b82f6" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="amount" fill="#1e3a5f" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
+          ) : (
+            <div className="h-72 flex items-center justify-center text-gray-400">
+              ไม่มีข้อมูล
+            </div>
           )}
         </div>
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="bg-white rounded-xl shadow-sm border p-6">
+        <h2 className="text-base font-semibold text-[#1e3a5f] mb-4">
           รายการล่าสุด
         </h2>
-        {loading ? (
-          <div className="space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />
-            ))}
-          </div>
-        ) : data?.recentItems && data.recentItems.length > 0 ? (
+        {data?.recentItems && data.recentItems.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-gray-200 text-left text-gray-500">
                   <th className="pb-3 font-medium">วันที่</th>
                   <th className="pb-3 font-medium">รายการ</th>
-                  <th className="pb-3 font-medium">ประเภทงบ</th>
+                  <th className="pb-3 font-medium">ประเภทเงิน</th>
                   <th className="pb-3 font-medium text-right">จำนวนเงิน</th>
                   <th className="pb-3 font-medium text-center">สถานะ</th>
                 </tr>
@@ -303,9 +260,11 @@ export default function DashboardPage() {
                     <td className="py-3 text-gray-900 font-medium max-w-xs truncate">
                       {item.description}
                     </td>
-                    <td className="py-3 text-gray-600">{item.budgetTypeName}</td>
-                    <td className="py-3 text-right text-gray-900 font-medium">
-                      {formatCurrency(item.netAmount)}
+                    <td className="py-3 text-gray-600">
+                      {item.budgetTypeName}
+                    </td>
+                    <td className="py-3 text-right font-mono text-gray-900">
+                      {formatCurrency(item.totalAmount)}
                     </td>
                     <td className="py-3 text-center">
                       <StatusBadge status={item.status} />

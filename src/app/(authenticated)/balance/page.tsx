@@ -1,17 +1,35 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { formatCurrency, getCurrentFiscalYear } from '@/lib/utils'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { Printer, Inbox } from 'lucide-react'
 
 interface BudgetTypeBalance {
+  id: number
   name: string
   code: string
+  category: string
+  parentId: number | null
+  totalReceived: number
+  totalDisbursed: number
+  balance: number
+}
+
+interface Subtotal {
+  totalReceived: number
   totalDisbursed: number
   balance: number
 }
 
 interface BalanceResponse {
-  budgetTypes: BudgetTypeBalance[]
+  fiscalYear: number
+  budgetCategory: BudgetTypeBalance[]
+  nonBudgetCategory: BudgetTypeBalance[]
+  budgetSubtotal: Subtotal
+  nonBudgetSubtotal: Subtotal
+  grandTotal: Subtotal
 }
 
 export default function BalancePage() {
@@ -27,58 +45,140 @@ export default function BalancePage() {
       .finally(() => setLoading(false))
   }, [fiscalYear])
 
-  const totalDisbursed = data?.budgetTypes.reduce((sum, bt) => sum + bt.totalDisbursed, 0) ?? 0
+  const renderRows = (items: BudgetTypeBalance[]) =>
+    items.map((bt) => (
+      <tr key={bt.id} className="hover:bg-gray-50 border-b transition-colors">
+        <td className="px-4 py-3 text-gray-900">{bt.name}</td>
+        <td className="px-4 py-3 text-right font-mono text-gray-900">
+          {formatCurrency(bt.totalReceived)}
+        </td>
+        <td className="px-4 py-3 text-right font-mono text-gray-900">
+          {formatCurrency(bt.totalDisbursed)}
+        </td>
+        <td className="px-4 py-3 text-right font-mono font-medium text-[#1e3a5f]">
+          {formatCurrency(bt.balance)}
+        </td>
+      </tr>
+    ))
+
+  const renderSubtotalRow = (label: string, subtotal: Subtotal) => (
+    <tr className="bg-blue-50/50 border-b border-blue-200">
+      <td className="px-4 py-3 font-semibold text-[#1e3a5f]">{label}</td>
+      <td className="px-4 py-3 text-right font-mono font-semibold text-[#1e3a5f]">
+        {formatCurrency(subtotal.totalReceived)}
+      </td>
+      <td className="px-4 py-3 text-right font-mono font-semibold text-[#1e3a5f]">
+        {formatCurrency(subtotal.totalDisbursed)}
+      </td>
+      <td className="px-4 py-3 text-right font-mono font-bold text-[#1e3a5f]">
+        {formatCurrency(subtotal.balance)}
+      </td>
+    </tr>
+  )
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">รายงานเงินคงเหลือ</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          ปีงบประมาณ {fiscalYear}
-        </p>
-      </div>
+      <PageHeader
+        title="รายงานเงินคงเหลือ"
+        subtitle={`ปีงบประมาณ ${fiscalYear}`}
+        actions={
+          <Link
+            href="/print/balance"
+            target="_blank"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+          >
+            <Printer size={16} />
+            พิมพ์รายงาน
+          </Link>
+        }
+      />
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         {loading ? (
           <div className="p-8 space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />
+              <div key={i} className="h-12 animate-pulse bg-gray-200 rounded" />
             ))}
           </div>
-        ) : data?.budgetTypes && data.budgetTypes.length > 0 ? (
+        ) : data &&
+          (data.budgetCategory.length > 0 || data.nonBudgetCategory.length > 0) ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-left text-gray-500">
-                  <th className="px-4 py-3 font-medium">ประเภทบัญชีเงิน</th>
-                  <th className="px-4 py-3 font-medium text-right">ยอดเบิกจ่ายรวม</th>
+                <tr className="bg-[#1e3a5f] text-white">
+                  <th className="px-4 py-3 text-left text-xs uppercase tracking-wider font-medium">
+                    ประเภทเงิน
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs uppercase tracking-wider font-medium">
+                    ยอดรับเข้า
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs uppercase tracking-wider font-medium">
+                    ยอดเบิกจ่าย
+                  </th>
+                  <th className="px-4 py-3 text-right text-xs uppercase tracking-wider font-medium">
+                    คงเหลือ
+                  </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {data.budgetTypes.map((bt) => (
-                  <tr key={bt.code} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-gray-900">{bt.name}</td>
-                    <td className="px-4 py-3 text-right text-gray-900 font-medium">
-                      {formatCurrency(bt.totalDisbursed)}
-                    </td>
-                  </tr>
-                ))}
+              <tbody>
+                {/* งบประมาณ */}
+                {data.budgetCategory.length > 0 && (
+                  <>
+                    <tr className="bg-gray-100 border-b">
+                      <td
+                        colSpan={4}
+                        className="px-4 py-2 font-semibold text-sm text-[#1e3a5f]"
+                      >
+                        งบประมาณ
+                      </td>
+                    </tr>
+                    {renderRows(data.budgetCategory)}
+                    {renderSubtotalRow('รวมงบประมาณ', data.budgetSubtotal)}
+                  </>
+                )}
+
+                {/* นอกงบประมาณ */}
+                {data.nonBudgetCategory.length > 0 && (
+                  <>
+                    <tr className="bg-gray-100 border-b">
+                      <td
+                        colSpan={4}
+                        className="px-4 py-2 font-semibold text-sm text-[#1e3a5f]"
+                      >
+                        นอกงบประมาณ
+                      </td>
+                    </tr>
+                    {renderRows(data.nonBudgetCategory)}
+                    {renderSubtotalRow(
+                      'รวมนอกงบประมาณ',
+                      data.nonBudgetSubtotal
+                    )}
+                  </>
+                )}
               </tbody>
               <tfoot>
-                <tr className="bg-gray-50 border-t-2 border-gray-300">
-                  <td className="px-4 py-3 font-bold text-gray-900">รวมทั้งสิ้น</td>
-                  <td className="px-4 py-3 text-right font-bold text-gray-900">
-                    {formatCurrency(totalDisbursed)}
+                <tr className="bg-[#1e3a5f]/10 border-t-2 border-[#1e3a5f]">
+                  <td className="px-4 py-3 font-bold text-[#1e3a5f]">
+                    รวมทั้งสิ้น
+                  </td>
+                  <td className="px-4 py-3 text-right font-bold font-mono text-[#1e3a5f]">
+                    {formatCurrency(data.grandTotal.totalReceived)}
+                  </td>
+                  <td className="px-4 py-3 text-right font-bold font-mono text-[#1e3a5f]">
+                    {formatCurrency(data.grandTotal.totalDisbursed)}
+                  </td>
+                  <td className="px-4 py-3 text-right font-bold font-mono text-[#1e3a5f]">
+                    {formatCurrency(data.grandTotal.balance)}
                   </td>
                 </tr>
               </tfoot>
             </table>
           </div>
         ) : (
-          <div className="p-12 text-center text-gray-400">
-            ไม่พบข้อมูลเงินคงเหลือ
+          <div className="flex flex-col items-center justify-center py-16">
+            <Inbox size={48} className="text-gray-300" />
+            <p className="mt-3 text-sm text-gray-400">ไม่พบข้อมูลเงินคงเหลือ</p>
           </div>
         )}
       </div>

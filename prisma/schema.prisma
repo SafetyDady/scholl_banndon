@@ -7,20 +7,26 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ===== USERS & AUTH =====
+
 model User {
   id           Int       @id @default(autoincrement())
   username     String    @unique
   passwordHash String
   fullName     String
   position     String
-  role         String
+  role         String    // TEACHER | FINANCE_OFFICER | VICE_PRINCIPAL | PRINCIPAL | ADMIN
+  lineUserId   String?   @unique
   isActive     Boolean   @default(true)
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  disbursementsCreated Disbursement[]   @relation("CreatedBy")
-  workflowActions      WorkflowAction[]
-  sessions             Session[]
+  sessions              Session[]
+  approvalRequests      ApprovalRequest[]   @relation("CreatedBy")
+  workflowActions       WorkflowAction[]
+  moneyTransactions     MoneyTransaction[]  @relation("TransactionCreatedBy")
+  reconciliations       Reconciliation[]    @relation("ReconciliationCreatedBy")
+  bankStatements        BankStatement[]     @relation("StatementCreatedBy")
 }
 
 model Session {
@@ -32,84 +38,208 @@ model Session {
   user User @relation(fields: [userId], references: [id])
 }
 
+model Permission {
+  id          Int              @id @default(autoincrement())
+  group       String
+  action      String
+  description String
+
+  rolePermissions RolePermission[]
+
+  @@unique([group, action])
+}
+
+model RolePermission {
+  id           Int     @id @default(autoincrement())
+  role         String
+  permissionId Int
+  granted      Boolean @default(true)
+
+  permission Permission @relation(fields: [permissionId], references: [id])
+
+  @@unique([role, permissionId])
+}
+
+// ===== MASTER DATA =====
+
+model BankAccount {
+  id            Int      @id @default(autoincrement())
+  bankName      String
+  accountNumber String   @unique
+  accountName   String
+  branch        String?
+  accountType   String   @default("SAVINGS") // SAVINGS | CURRENT
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  budgetTypes        BudgetType[]
+  moneyTransactions  MoneyTransaction[]
+  reconciliations    Reconciliation[]
+  bankStatements     BankStatement[]
+}
+
 model BudgetType {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  code      String   @unique
-  parentId  Int?
-  isActive  Boolean  @default(true)
-  sortOrder Int      @default(0)
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  code          String   @unique
+  category      String   @default("NON_BUDGET") // BUDGET | NON_BUDGET
+  parentId      Int?
+  bankAccountId Int?
+  isActive      Boolean  @default(true)
+  sortOrder     Int      @default(0)
 
   parent   BudgetType?  @relation("SubTypes", fields: [parentId], references: [id])
   children BudgetType[] @relation("SubTypes")
 
-  disbursements  Disbursement[]
-  balanceEntries BalanceEntry[]
+  bankAccount        BankAccount?        @relation(fields: [bankAccountId], references: [id])
+  disbursementGroups DisbursementGroup[]
+  moneyTransactions  MoneyTransaction[]
+  balanceEntries     BalanceEntry[]
 }
 
-model Disbursement {
-  id              Int      @id @default(autoincrement())
-  sequenceNumber  Int?
-  fiscalYear      Int
-  requestDate     DateTime
-  memoNumber      String?
-  budgetTypeId    Int
-  description     String
-  amount          Float
-  taxWithheld     Float    @default(0)
-  netAmount       Float
-  note            String?
+// ===== APPROVAL REQUEST (บันทึกขออนุมัติ) =====
 
-  currentStep     Int      @default(1)
-  status          String   @default("DRAFT")
+model ApprovalRequest {
+  id             Int      @id @default(autoincrement())
+  sequenceNumber Int?
+  fiscalYear     Int
+  requestDate    DateTime
+  memoNumber     String?
+  totalAmount    Float    @default(0)
+  note           String?
 
-  payeeName       String?
-  payeeTaxId      String?
-  payeeAddress    String?
+  currentStep    Int      @default(1)
+  status         String   @default("DRAFT")
 
-  createdById     Int
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  createdById    Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
+  createdBy          User                @relation("CreatedBy", fields: [createdById], references: [id])
+  disbursementGroups DisbursementGroup[]
+  workflowActions    WorkflowAction[]
+  moneyTransactions  MoneyTransaction[]
+  bankStatements     BankStatement[]
+}
+
+model DisbursementGroup {
+  id                Int   @id @default(autoincrement())
+  approvalRequestId Int
+  budgetTypeId      Int
+  subtotal          Float @default(0)
+  sortOrder         Int   @default(0)
+
+  approvalRequest ApprovalRequest  @relation(fields: [approvalRequestId], references: [id], onDelete: Cascade)
   budgetType      BudgetType       @relation(fields: [budgetTypeId], references: [id])
-  createdBy       User             @relation("CreatedBy", fields: [createdById], references: [id])
-  workflowActions WorkflowAction[]
-  taxCertificate  TaxCertificate?
+  items           DisbursementItem[]
+
+  @@unique([approvalRequestId, budgetTypeId])
 }
+
+model DisbursementItem {
+  id                  Int      @id @default(autoincrement())
+  disbursementGroupId Int
+  description         String
+  amount              Float
+  taxWithheld         Float    @default(0)
+  netAmount           Float
+  payeeName           String?
+  payeeTaxId          String?
+  payeeAddress        String?
+  note                String?
+  sortOrder           Int      @default(0)
+
+  disbursementGroup DisbursementGroup @relation(fields: [disbursementGroupId], references: [id], onDelete: Cascade)
+  taxCertificate    TaxCertificate?
+  paymentRecords    PaymentRecord[]
+}
+
+// ===== WORKFLOW =====
 
 model WorkflowAction {
-  id              Int      @id @default(autoincrement())
-  disbursementId  Int
-  stepNumber      Int
-  stepName        String
-  action          String
-  comment         String?
-  performedById   Int
-  performedAt     DateTime @default(now())
+  id                Int      @id @default(autoincrement())
+  approvalRequestId Int
+  stepNumber        Int
+  stepName          String
+  action            String   // SUBMIT | APPROVE | REJECT | COMPLETE | SKIP
+  comment           String?
+  performedById     Int
+  performedAt       DateTime @default(now())
 
-  disbursement Disbursement @relation(fields: [disbursementId], references: [id])
-  performedBy  User         @relation(fields: [performedById], references: [id])
+  approvalRequest ApprovalRequest @relation(fields: [approvalRequestId], references: [id], onDelete: Cascade)
+  performedBy     User            @relation(fields: [performedById], references: [id])
 
-  @@index([disbursementId, stepNumber])
+  @@index([approvalRequestId, stepNumber])
 }
+
+model WorkflowSetting {
+  id              Int      @id @default(autoincrement())
+  key             String   @unique
+  value           String
+  description     String?
+  updatedAt       DateTime @updatedAt
+}
+
+// ===== MONEY TRANSACTIONS (เงินเคลื่อนไหว) =====
+
+model MoneyTransaction {
+  id                Int      @id @default(autoincrement())
+  type              String   // IN | OUT
+  bankAccountId     Int
+  budgetTypeId      Int
+  amount            Float
+  description       String
+  transactionDate   DateTime
+  approvalRequestId Int?
+  note              String?
+  createdById       Int
+  createdAt         DateTime @default(now())
+
+  bankAccount     BankAccount      @relation(fields: [bankAccountId], references: [id])
+  budgetType      BudgetType       @relation(fields: [budgetTypeId], references: [id])
+  approvalRequest ApprovalRequest? @relation(fields: [approvalRequestId], references: [id])
+  createdBy       User             @relation("TransactionCreatedBy", fields: [createdById], references: [id])
+
+  @@index([bankAccountId, transactionDate])
+  @@index([transactionDate])
+}
+
+// ===== TAX (ภาษี) =====
 
 model TaxCertificate {
-  id               Int      @id @default(autoincrement())
-  disbursementId   Int      @unique
-  certificateNo    String?
-  payeeName        String
-  payeeTaxId       String?
-  payeeAddress     String?
-  paymentDate      DateTime
-  paymentType      String
-  amountPaid       Float
-  taxWithheld      Float
-  taxRate          Float    @default(1)
-  fiscalYear       Int
-  createdAt        DateTime @default(now())
+  id                  Int      @id @default(autoincrement())
+  disbursementItemId  Int      @unique
+  certificateNo       String?
+  payeeName           String
+  payeeTaxId          String?
+  payeeAddress        String?
+  paymentDate         DateTime
+  paymentType         String
+  amountPaid          Float
+  taxWithheld         Float
+  taxRate             Float    @default(1)
+  fiscalYear          Int
+  createdAt           DateTime @default(now())
 
-  disbursement Disbursement @relation(fields: [disbursementId], references: [id])
+  disbursementItem DisbursementItem @relation(fields: [disbursementItemId], references: [id])
 }
+
+model TaxPaymentSummary {
+  id        Int       @id @default(autoincrement())
+  month     Int
+  year      Int
+  payeeName String
+  totalPaid Float
+  totalTax  Float
+  paidDate  DateTime?
+  receiptNo String?
+  createdAt DateTime  @default(now())
+
+  @@unique([month, year, payeeName])
+}
+
+// ===== BALANCE REPORT (รายงานเงินคงเหลือ) =====
 
 model BalanceReport {
   id           Int      @id @default(autoincrement())
@@ -128,10 +258,11 @@ model BalanceEntry {
   id              Int   @id @default(autoincrement())
   balanceReportId Int
   budgetTypeId    Int
-  broughtForward  Float @default(0)
-  received        Float @default(0)
-  disbursed       Float @default(0)
-  balance         Float @default(0)
+  cash            Float @default(0)
+  bankDeposit     Float @default(0)
+  accumulated     Float @default(0)
+  total           Float @default(0)
+  remark          String?
 
   balanceReport BalanceReport @relation(fields: [balanceReportId], references: [id], onDelete: Cascade)
   budgetType    BudgetType    @relation(fields: [budgetTypeId], references: [id])
@@ -139,16 +270,105 @@ model BalanceEntry {
   @@unique([balanceReportId, budgetTypeId])
 }
 
-model TaxPaymentSummary {
-  id           Int       @id @default(autoincrement())
-  month        Int
-  year         Int
-  payeeName    String
-  totalPaid    Float
-  totalTax     Float
-  paidDate     DateTime?
-  receiptNo    String?
-  createdAt    DateTime  @default(now())
+// ===== CONTRACTOR (ผู้รับจ้าง) =====
 
-  @@unique([month, year, payeeName])
+model Contractor {
+  id        Int      @id @default(autoincrement())
+  name      String
+  taxId     String?
+  address   String?
+  phone     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  paymentRecords PaymentRecord[]
+}
+
+// ===== PAYMENT RECORD (บันทึกการจ่ายเงิน) =====
+
+model PaymentRecord {
+  id                  Int       @id @default(autoincrement())
+  disbursementItemId  Int
+  paymentDate         DateTime
+  contractorId        Int?
+  payeeName           String
+  amount              Float
+  taxPercent          Float     @default(0)
+  taxWithheld         Float     @default(0)
+  netAmount           Float
+
+  taxCertificateNo    String?
+  taxCertificateDate  DateTime?
+
+  createdAt           DateTime  @default(now())
+
+  disbursementItem DisbursementItem @relation(fields: [disbursementItemId], references: [id], onDelete: Cascade)
+  contractor       Contractor?      @relation(fields: [contractorId], references: [id])
+
+  @@index([disbursementItemId])
+  @@index([paymentDate])
+}
+
+// ===== TAX SUBMISSION (นำส่งภาษี) =====
+
+model TaxSubmission {
+  id            Int       @id @default(autoincrement())
+  month         Int
+  year          Int
+  totalAmount   Float
+  totalTax      Float
+  submittedDate DateTime?
+  receiptNo     String?
+  status        String    @default("PENDING") // PENDING | SUBMITTED
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@unique([month, year])
+}
+
+// ===== BANK STATEMENT (สมุดบัญชี) =====
+
+model BankStatement {
+  id                 Int      @id @default(autoincrement())
+  bankAccountId      Int
+  transactionDate    DateTime
+  withdrawal         Float    @default(0)
+  deposit            Float    @default(0)
+  balance            Float
+  description        String?
+
+  approvalRequestId  Int?
+  moneyTransactionId Int?
+  matchStatus        String   @default("UNMATCHED") // MATCHED | UNMATCHED | MANUAL
+
+  createdById        Int
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  bankAccount     BankAccount      @relation(fields: [bankAccountId], references: [id])
+  approvalRequest ApprovalRequest? @relation(fields: [approvalRequestId], references: [id])
+  createdBy       User             @relation("StatementCreatedBy", fields: [createdById], references: [id])
+
+  @@index([bankAccountId, transactionDate])
+}
+
+// ===== RECONCILIATION (กระทบยอด) =====
+
+model Reconciliation {
+  id              Int      @id @default(autoincrement())
+  reconcileDate   DateTime
+  bankAccountId   Int
+  systemBalance   Float
+  actualBalance   Float
+  difference      Float
+  isMatched       Boolean
+  remark          String?
+  createdById     Int
+  createdAt       DateTime @default(now())
+
+  bankAccount BankAccount @relation(fields: [bankAccountId], references: [id])
+  createdBy   User        @relation("ReconciliationCreatedBy", fields: [createdById], references: [id])
+
+  @@unique([reconcileDate, bankAccountId])
 }

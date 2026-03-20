@@ -2,21 +2,13 @@
 
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
-import { formatCurrency, formatShortDate } from '@/lib/utils'
-
-interface DisbursementItem {
-  id: number
-  requestDate: string
-  memoNumber: string | null
-  description: string
-  netAmount: number
-  status: string
-  budgetType: { id: number; name: string; code: string }
-  createdBy: { id: number; fullName: string }
-}
+import { cn, formatCurrency, formatShortDate } from '@/lib/utils'
+import { PageHeader } from '@/components/shared/PageHeader'
+import { CheckCircle, XCircle, Inbox } from 'lucide-react'
+import type { ApprovalRequestListItem } from '@/types'
 
 interface ApiResponse {
-  data: DisbursementItem[]
+  data: ApprovalRequestListItem[]
   total: number
   page: number
   totalPages: number
@@ -94,92 +86,106 @@ export default function ApprovalsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div>
-        <h1 className="text-2xl font-bold text-gray-900">รายการรออนุมัติ</h1>
-        <p className="text-sm text-gray-500 mt-1">
-          รายการเบิกจ่ายที่รอการอนุมัติจากท่าน
-        </p>
-      </div>
+      <PageHeader
+        title="รายการรออนุมัติ"
+        subtitle="รายการเบิกจ่ายที่รอการอนุมัติจากท่าน"
+      />
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         {loading ? (
           <div className="p-8 space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />
+              <div key={i} className="h-12 animate-pulse bg-gray-200 rounded" />
             ))}
           </div>
         ) : data?.data && data.data.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-left text-gray-500">
-                  <th className="px-4 py-3 font-medium">วันที่</th>
-                  <th className="px-4 py-3 font-medium">บันทึกฉบับที่</th>
-                  <th className="px-4 py-3 font-medium">ประเภทเงิน</th>
-                  <th className="px-4 py-3 font-medium">รายการ</th>
-                  <th className="px-4 py-3 font-medium text-right">จำนวนเงิน</th>
-                  <th className="px-4 py-3 font-medium">ผู้ขอเบิก</th>
-                  <th className="px-4 py-3 font-medium text-center">การดำเนินการ</th>
+                <tr className="bg-gray-50 border-b">
+                  <th className="px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider font-medium">วันที่</th>
+                  <th className="px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider font-medium">บันทึกฉบับที่</th>
+                  <th className="px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider font-medium">ประเภทเงิน</th>
+                  <th className="px-4 py-3 text-right text-xs text-gray-500 uppercase tracking-wider font-medium">จำนวนเงิน</th>
+                  <th className="px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider font-medium">ผู้ขอเบิก</th>
+                  <th className="px-4 py-3 text-center text-xs text-gray-500 uppercase tracking-wider font-medium">การดำเนินการ</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {data.data.map((item) => (
-                  <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                    <td className="px-4 py-3 text-gray-600">
-                      {formatShortDate(item.requestDate)}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {item.memoNumber ?? '-'}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {item.budgetType.name}
-                    </td>
-                    <td className="px-4 py-3 text-gray-900 font-medium max-w-xs truncate">
-                      {item.description}
-                    </td>
-                    <td className="px-4 py-3 text-right text-gray-900 font-medium">
-                      {formatCurrency(item.netAmount)}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {item.createdBy.fullName}
-                    </td>
-                    <td className="px-4 py-3">
-                      <div className="flex items-center justify-center gap-2">
-                        <Link
-                          href={`/disbursements/${item.id}`}
-                          className="px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                        >
-                          ดูรายละเอียด
-                        </Link>
-                        <button
-                          onClick={() => handleApprove(item.id)}
-                          disabled={actionLoading === item.id}
-                          className="px-3 py-1.5 text-xs font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                          {actionLoading === item.id ? 'กำลังดำเนินการ...' : 'อนุมัติ'}
-                        </button>
-                        <button
-                          onClick={() => {
-                            setRejectModal({ id: item.id })
-                            setRejectComment('')
-                          }}
-                          disabled={actionLoading === item.id}
-                          className="px-3 py-1.5 text-xs font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                        >
-                          ไม่อนุมัติ
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
+              <tbody>
+                {data.data.map((item) => {
+                  const firstGroupType = item.disbursementGroups?.[0]?.budgetType?.name ?? '-'
+                  const groupCount = item.disbursementGroups?.length ?? 0
+
+                  return (
+                    <tr key={item.id} className="hover:bg-gray-50 border-b transition-colors">
+                      <td className="px-4 py-3 text-gray-600">
+                        {formatShortDate(item.requestDate)}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {item.memoNumber ?? '-'}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {firstGroupType}
+                        {groupCount > 1 && (
+                          <span className="ml-1 text-xs text-gray-400">
+                            (+{groupCount - 1})
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-gray-900">
+                        {formatCurrency(item.totalAmount)}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {item.createdBy.fullName}
+                      </td>
+                      <td className="px-4 py-3">
+                        <div className="flex items-center justify-center gap-2">
+                          <Link
+                            href={`/disbursements/${item.id}`}
+                            className="px-3 py-1.5 text-xs font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
+                          >
+                            ดูรายละเอียด
+                          </Link>
+                          <button
+                            onClick={() => handleApprove(item.id)}
+                            disabled={actionLoading === item.id}
+                            className={cn(
+                              'inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors',
+                              'bg-[#16a34a] hover:bg-[#15803d] text-white',
+                              'disabled:opacity-50 disabled:cursor-not-allowed'
+                            )}
+                          >
+                            <CheckCircle size={14} />
+                            {actionLoading === item.id ? 'กำลังดำเนินการ...' : 'อนุมัติ'}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setRejectModal({ id: item.id })
+                              setRejectComment('')
+                            }}
+                            disabled={actionLoading === item.id}
+                            className={cn(
+                              'inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors',
+                              'bg-red-500 hover:bg-red-600 text-white',
+                              'disabled:opacity-50 disabled:cursor-not-allowed'
+                            )}
+                          >
+                            <XCircle size={14} />
+                            ไม่อนุมัติ
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="p-12 text-center text-gray-400">
-            ไม่มีรายการรออนุมัติ
+          <div className="flex flex-col items-center justify-center py-16">
+            <Inbox size={48} className="text-gray-300" />
+            <p className="mt-3 text-sm text-gray-400">ไม่มีรายการรออนุมัติ</p>
           </div>
         )}
       </div>
@@ -194,7 +200,7 @@ export default function ApprovalsPage() {
               setRejectComment('')
             }}
           />
-          <div className="relative bg-white rounded-xl shadow-xl border border-gray-200 p-6 w-full max-w-md mx-4">
+          <div className="relative bg-white rounded-xl shadow-xl border p-6 w-full max-w-md mx-4">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">
               ไม่อนุมัติรายการ
             </h3>
@@ -206,7 +212,7 @@ export default function ApprovalsPage() {
               onChange={(e) => setRejectComment(e.target.value)}
               rows={3}
               placeholder="ระบุเหตุผล..."
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 resize-none"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] resize-none"
               autoFocus
             />
             <div className="flex items-center justify-end gap-3 mt-4">
@@ -215,14 +221,18 @@ export default function ApprovalsPage() {
                   setRejectModal(null)
                   setRejectComment('')
                 }}
-                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+                className="px-4 py-2 text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
               >
                 ยกเลิก
               </button>
               <button
                 onClick={handleReject}
                 disabled={actionLoading !== null}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className={cn(
+                  'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
+                  'bg-red-500 hover:bg-red-600 text-white',
+                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                )}
               >
                 {actionLoading !== null ? 'กำลังดำเนินการ...' : 'ยืนยันไม่อนุมัติ'}
               </button>

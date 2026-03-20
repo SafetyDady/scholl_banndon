@@ -1,14 +1,34 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
+import { useState, useEffect, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import {
+  GraduationCap,
+  User,
+  Lock,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  Loader2,
+} from 'lucide-react';
+import { cn } from '@/lib/utils';
+import { Button } from '@/components/ui/button';
 
 export default function LoginPage() {
   const router = useRouter();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -38,46 +58,40 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-700 via-blue-800 to-slate-900">
-      <div className="w-full max-w-md mx-4">
+    <div
+      className={cn(
+        'min-h-screen flex items-center justify-center',
+        'bg-gradient-to-br from-[#1e3a5f] via-[#1a3355] to-[#163050]',
+        'font-[Sarabun] px-4'
+      )}
+    >
+      <div className="w-full max-w-md">
         <div className="bg-white rounded-2xl shadow-2xl p-8">
           {/* Header */}
           <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
-              <svg
-                className="w-8 h-8 text-white"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                />
-              </svg>
+            <div
+              className={cn(
+                'mx-auto w-20 h-20 rounded-full flex items-center justify-center mb-4',
+                'bg-[#1e3a5f]/10'
+              )}
+            >
+              <GraduationCap size={48} className="text-[#1e3a5f]" />
             </div>
-            <h1 className="text-2xl font-bold text-gray-800">ระบบการเงิน</h1>
-            <p className="text-gray-500 mt-1">โรงเรียนวัดบ้านดอน</p>
+            <h1 className="text-2xl font-bold text-[#1e3a5f]">
+              ระบบบริหารจัดการ
+            </h1>
+            <p className="text-sm text-gray-500 mt-1">โรงเรียนวัดบ้านดอน</p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-6 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center gap-2">
-              <svg
-                className="w-5 h-5 text-red-500 flex-shrink-0"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
+            <div
+              className={cn(
+                'mb-6 p-3 bg-red-50 border border-red-200 rounded-lg',
+                'flex items-center gap-2'
+              )}
+            >
+              <AlertCircle size={20} className="text-red-500 flex-shrink-0" />
               <span className="text-red-700 text-sm">{error}</span>
             </div>
           )}
@@ -91,15 +105,25 @@ export default function LoginPage() {
               >
                 ชื่อผู้ใช้
               </label>
-              <input
-                id="username"
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-                placeholder="กรอกชื่อผู้ใช้"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900 placeholder-gray-400"
-              />
+              <div className="relative">
+                <User
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  id="username"
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  required
+                  placeholder="กรอกชื่อผู้ใช้"
+                  className={cn(
+                    'w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg',
+                    'focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]',
+                    'outline-none transition-colors text-gray-900 placeholder-gray-400'
+                  )}
+                />
+              </div>
             </div>
 
             <div>
@@ -109,55 +133,80 @@ export default function LoginPage() {
               >
                 รหัสผ่าน
               </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                placeholder="กรอกรหัสผ่าน"
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-colors text-gray-900 placeholder-gray-400"
-              />
+              <div className="relative">
+                <Lock
+                  size={18}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="กรอกรหัสผ่าน"
+                  className={cn(
+                    'w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg',
+                    'focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]',
+                    'outline-none transition-colors text-gray-900 placeholder-gray-400'
+                  )}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
-            <button
+            <Button
               type="submit"
               disabled={isLoading}
-              className="w-full py-2.5 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center gap-2"
+              className={cn(
+                'w-full h-11 bg-[#1e3a5f] hover:bg-[#163050] disabled:opacity-60',
+                'text-white font-medium rounded-lg transition-colors duration-200',
+                'flex items-center justify-center gap-2 text-base'
+              )}
             >
               {isLoading ? (
                 <>
-                  <svg
-                    className="animate-spin h-5 w-5 text-white"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    />
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                    />
-                  </svg>
+                  <Loader2 size={20} className="animate-spin" />
                   <span>กำลังเข้าสู่ระบบ...</span>
                 </>
               ) : (
-                'เข้าสู่ระบบ'
+                <span>เข้าสู่ระบบ</span>
               )}
-            </button>
+            </Button>
           </form>
+
+          {/* Mobile-only LINE Login */}
+          {isMobile && (
+            <div className="mt-6">
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px bg-gray-300" />
+                <span className="text-sm text-gray-400">หรือ</span>
+                <div className="flex-1 h-px bg-gray-300" />
+              </div>
+
+              <Button
+                type="button"
+                onClick={() => alert('กำลังพัฒนา')}
+                className={cn(
+                  'w-full h-11 mt-4 bg-[#06c755] hover:bg-[#05b54c]',
+                  'text-white font-medium rounded-lg transition-colors duration-200',
+                  'flex items-center justify-center gap-2 text-base'
+                )}
+              >
+                <span>เข้าสู่ระบบด้วย LINE</span>
+              </Button>
+            </div>
+          )}
 
           {/* Footer */}
           <p className="text-center text-xs text-gray-400 mt-6">
-            ระบบจัดการการเงินโรงเรียนวัดบ้านดอน
+            &copy; 2569 โรงเรียนวัดบ้านดอน
           </p>
         </div>
       </div>

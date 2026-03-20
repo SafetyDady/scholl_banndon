@@ -3,65 +3,30 @@
 import { useEffect, useState, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { formatCurrency, formatShortDate, getCurrentFiscalYear } from '@/lib/utils'
+import { cn, formatCurrency, formatShortDate, getCurrentFiscalYear } from '@/lib/utils'
 import { STATUS_LABELS } from '@/lib/constants'
-
-interface BudgetType {
-  id: number
-  name: string
-  code: string
-}
-
-interface DisbursementItem {
-  id: number
-  sequenceNumber: number | null
-  requestDate: string
-  memoNumber: string | null
-  description: string
-  netAmount: number
-  status: string
-  budgetType: { id: number; name: string; code: string }
-}
+import { PageHeader } from '@/components/shared/PageHeader'
+import { StatusBadge } from '@/components/shared/StatusBadge'
+import { Plus, Search, Inbox, ChevronLeft, ChevronRight } from 'lucide-react'
+import type { ApprovalRequestListItem } from '@/types'
 
 interface ApiResponse {
-  data: DisbursementItem[]
+  data: ApprovalRequestListItem[]
   total: number
   page: number
   totalPages: number
-}
-
-function StatusBadge({ status }: { status: string }) {
-  const info = STATUS_LABELS[status]
-  return (
-    <span
-      className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium ${info?.color ?? 'bg-gray-100 text-gray-800'}`}
-    >
-      {info?.label ?? status}
-    </span>
-  )
 }
 
 export default function DisbursementsPage() {
   const router = useRouter()
   const [data, setData] = useState<ApiResponse | null>(null)
   const [loading, setLoading] = useState(true)
-  const [budgetTypes, setBudgetTypes] = useState<BudgetType[]>([])
 
-  const [budgetTypeId, setBudgetTypeId] = useState('')
   const [status, setStatus] = useState('')
   const [search, setSearch] = useState('')
   const [page, setPage] = useState(1)
 
   const fiscalYear = getCurrentFiscalYear()
-
-  useEffect(() => {
-    fetch('/api/budget-types')
-      .then((res) => res.json())
-      .then((json) => {
-        if (Array.isArray(json)) setBudgetTypes(json)
-      })
-      .catch(console.error)
-  }, [])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -70,7 +35,6 @@ export default function DisbursementsPage() {
       page: String(page),
       limit: '20',
     })
-    if (budgetTypeId) params.set('budgetTypeId', budgetTypeId)
     if (status) params.set('status', status)
     if (search) params.set('search', search)
 
@@ -83,7 +47,7 @@ export default function DisbursementsPage() {
     } finally {
       setLoading(false)
     }
-  }, [fiscalYear, page, budgetTypeId, status, search])
+  }, [fiscalYear, page, status, search])
 
   useEffect(() => {
     fetchData()
@@ -96,48 +60,26 @@ export default function DisbursementsPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">รายการเบิกจ่าย</h1>
-          <p className="text-sm text-gray-500 mt-1">
-            ปีงบประมาณ {fiscalYear}
-          </p>
-        </div>
-        <Link
-          href="/disbursements/new"
-          className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          สร้างรายการใหม่
-        </Link>
-      </div>
+      <PageHeader
+        title="รายการเบิกจ่าย"
+        subtitle={`ปีงบประมาณ ${fiscalYear}`}
+        actions={
+          <Link
+            href="/disbursements/new"
+            className={cn(
+              'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors',
+              'bg-[#1e3a5f] hover:bg-[#163050] text-white'
+            )}
+          >
+            <Plus size={16} />
+            สร้างรายการใหม่
+          </Link>
+        }
+      />
 
       {/* Filter Bar */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              ประเภทเงิน
-            </label>
-            <select
-              value={budgetTypeId}
-              onChange={(e) => {
-                setBudgetTypeId(e.target.value)
-                setPage(1)
-              }}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">ทั้งหมด</option>
-              {budgetTypes.map((bt) => (
-                <option key={bt.id} value={bt.id}>
-                  {bt.name}
-                </option>
-              ))}
-            </select>
-          </div>
+      <div className="bg-white rounded-xl shadow-sm border p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               สถานะ
@@ -148,7 +90,7 @@ export default function DisbursementsPage() {
                 setStatus(e.target.value)
                 setPage(1)
               }}
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
             >
               <option value="">ทั้งหมด</option>
               {statusOptions.map((s) => (
@@ -162,84 +104,94 @@ export default function DisbursementsPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               ค้นหา
             </label>
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => {
-                setSearch(e.target.value)
-                setPage(1)
-              }}
-              placeholder="ค้นหารายการ, บันทึกฉบับที่, ผู้รับจ้าง..."
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
+            <div className="relative">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => {
+                  setSearch(e.target.value)
+                  setPage(1)
+                }}
+                placeholder="ค้นหารายการ, บันทึกฉบับที่, ผู้รับจ้าง..."
+                className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+              />
+            </div>
           </div>
         </div>
       </div>
 
       {/* Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         {loading ? (
           <div className="p-8 space-y-3">
             {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 bg-gray-100 rounded animate-pulse" />
+              <div key={i} className="h-12 animate-pulse bg-gray-200 rounded" />
             ))}
           </div>
         ) : data?.data && data.data.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gray-50 border-b border-gray-200 text-left text-gray-500">
-                  <th className="px-4 py-3 font-medium">ลำดับ</th>
-                  <th className="px-4 py-3 font-medium">วันที่</th>
-                  <th className="px-4 py-3 font-medium">บันทึกฉบับที่</th>
-                  <th className="px-4 py-3 font-medium">ประเภทเงิน</th>
-                  <th className="px-4 py-3 font-medium">รายการ</th>
-                  <th className="px-4 py-3 font-medium text-right">จำนวนเงิน</th>
-                  <th className="px-4 py-3 font-medium text-center">สถานะ</th>
+                <tr className="bg-gray-50 border-b">
+                  <th className="px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider font-medium">ลำดับ</th>
+                  <th className="px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider font-medium">วันที่</th>
+                  <th className="px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider font-medium">บันทึกฉบับที่</th>
+                  <th className="px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider font-medium">ประเภทเงิน</th>
+                  <th className="px-4 py-3 text-right text-xs text-gray-500 uppercase tracking-wider font-medium">จำนวนเงิน</th>
+                  <th className="px-4 py-3 text-center text-xs text-gray-500 uppercase tracking-wider font-medium">สถานะ</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
-                {data.data.map((item, index) => (
-                  <tr
-                    key={item.id}
-                    onClick={() => router.push(`/disbursements/${item.id}`)}
-                    className="hover:bg-gray-50 cursor-pointer transition-colors"
-                  >
-                    <td className="px-4 py-3 text-gray-600">
-                      {(page - 1) * 20 + index + 1}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {formatShortDate(item.requestDate)}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {item.memoNumber ?? '-'}
-                    </td>
-                    <td className="px-4 py-3 text-gray-600">
-                      {item.budgetType.name}
-                    </td>
-                    <td className="px-4 py-3 text-gray-900 font-medium max-w-xs truncate">
-                      {item.description}
-                    </td>
-                    <td className="px-4 py-3 text-right text-gray-900 font-medium">
-                      {formatCurrency(item.netAmount)}
-                    </td>
-                    <td className="px-4 py-3 text-center">
-                      <StatusBadge status={item.status} />
-                    </td>
-                  </tr>
-                ))}
+              <tbody>
+                {data.data.map((item, index) => {
+                  const firstGroupType = item.disbursementGroups?.[0]?.budgetType?.name ?? '-'
+                  const groupCount = item.disbursementGroups?.length ?? 0
+
+                  return (
+                    <tr
+                      key={item.id}
+                      onClick={() => router.push(`/disbursements/${item.id}`)}
+                      className="hover:bg-gray-50 cursor-pointer border-b transition-colors"
+                    >
+                      <td className="px-4 py-3 text-gray-600">
+                        {(page - 1) * 20 + index + 1}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {formatShortDate(item.requestDate)}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {item.memoNumber ?? '-'}
+                      </td>
+                      <td className="px-4 py-3 text-gray-600">
+                        {firstGroupType}
+                        {groupCount > 1 && (
+                          <span className="ml-1 text-xs text-gray-400">
+                            (+{groupCount - 1})
+                          </span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3 text-right font-mono text-gray-900">
+                        {formatCurrency(item.totalAmount)}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <StatusBadge status={item.status} />
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>
         ) : (
-          <div className="p-12 text-center text-gray-400">
-            ไม่พบรายการเบิกจ่าย
+          <div className="flex flex-col items-center justify-center py-16">
+            <Inbox size={48} className="text-gray-300" />
+            <p className="mt-3 text-sm text-gray-400">ไม่พบรายการเบิกจ่าย</p>
           </div>
         )}
 
         {/* Pagination */}
         {data && data.totalPages > 1 && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50">
+          <div className="flex items-center justify-between px-4 py-3 border-t bg-gray-50">
             <p className="text-sm text-gray-600">
               แสดง {(page - 1) * 20 + 1}-{Math.min(page * 20, data.total)} จาก{' '}
               {data.total} รายการ
@@ -248,8 +200,12 @@ export default function DisbursementsPage() {
               <button
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page <= 1}
-                className="px-3 py-1.5 text-sm rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={cn(
+                  'inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors',
+                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                )}
               >
+                <ChevronLeft size={14} />
                 ก่อนหน้า
               </button>
               <span className="text-sm text-gray-600">
@@ -258,9 +214,13 @@ export default function DisbursementsPage() {
               <button
                 onClick={() => setPage((p) => Math.min(data.totalPages, p + 1))}
                 disabled={page >= data.totalPages}
-                className="px-3 py-1.5 text-sm rounded-lg border border-gray-300 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                className={cn(
+                  'inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg border border-gray-300 text-gray-700 hover:bg-gray-50 transition-colors',
+                  'disabled:opacity-50 disabled:cursor-not-allowed'
+                )}
               >
                 ถัดไป
+                <ChevronRight size={14} />
               </button>
             </div>
           </div>
