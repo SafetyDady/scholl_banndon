@@ -7,6 +7,15 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ===== SCHOOL INFO (ข้อมูลโรงเรียน) =====
+
+model SchoolInfo {
+  id              Int      @id @default(autoincrement())
+  key             String   @unique
+  value           String
+  updatedAt       DateTime @updatedAt
+}
+
 // ===== USERS & AUTH =====
 
 model User {

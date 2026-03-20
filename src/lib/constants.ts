@@ -68,6 +68,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
   {
     title: 'ตั้งค่า',
     items: [
+      { label: 'ข้อมูลโรงเรียน', icon: 'School', path: '/settings/school-info', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'บัญชีธนาคาร', icon: 'Landmark', path: '/settings/bank-accounts', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'ประเภทเงิน', icon: 'Tags', path: '/settings/budget-types', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'ผู้รับจ้าง', icon: 'UserCheck', path: '/settings/contractors', roles: ['FINANCE_OFFICER', 'ADMIN'] },

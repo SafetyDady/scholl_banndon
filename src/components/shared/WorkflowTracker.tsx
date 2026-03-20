@@ -27,10 +27,11 @@ export function WorkflowTracker({ currentStep, status, workflowActions = [] }: W
       <div className="flex min-w-[640px] items-start justify-between px-2 py-4">
         {WORKFLOW_STEPS.map((step, index) => {
           const isSkipped = skippedSteps.has(step.number)
-          const isCompleted = step.number < currentStep && !isSkipped
-          const isCurrent = step.number === currentStep
+          const isAllDone = status === 'COMPLETED'
+          const isCompleted = (step.number < currentStep || (step.number === currentStep && isAllDone)) && !isSkipped
+          const isCurrent = step.number === currentStep && !isAllDone
           const isFuture = step.number > currentStep
-          const showRejected = isCurrent && isRejected
+          const showRejected = step.number === currentStep && isRejected
 
           return (
             <div key={step.number} className="flex flex-1 items-start">
