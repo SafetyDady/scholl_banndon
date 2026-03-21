@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { formatCurrency, formatShortDate, getCurrentFiscalYear } from '@/lib/utils'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
-import { FileText, Inbox, CheckCircle, Clock } from 'lucide-react'
+import { FileText, Inbox, CheckCircle } from 'lucide-react'
 
 interface TaxRecord {
   id: number
@@ -118,15 +118,26 @@ export default function TaxPage() {
                     </td>
                     <td className="px-4 py-3 text-center">
                       {r.taxCertificateNo ? (
-                        <span className="inline-flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-full">
-                          <CheckCircle size={12} />
-                          ออกแล้ว
-                        </span>
+                        <div className="flex items-center justify-center gap-2">
+                          <span className="inline-flex items-center gap-1 text-xs text-green-700 bg-green-50 px-2 py-1 rounded-full">
+                            <CheckCircle size={12} />
+                            ออกแล้ว
+                          </span>
+                          <button
+                            onClick={() => window.open(`/api/tax/50tawi/${r.id}`, '_blank')}
+                            className="text-xs text-blue-600 hover:text-blue-800 underline"
+                          >
+                            ดาวน์โหลด
+                          </button>
+                        </div>
                       ) : (
-                        <span className="inline-flex items-center gap-1 text-xs text-amber-700 bg-amber-50 px-2 py-1 rounded-full">
-                          <Clock size={12} />
-                          ยังไม่ออก
-                        </span>
+                        <button
+                          onClick={() => window.open(`/api/tax/50tawi/${r.id}`, '_blank')}
+                          className="inline-flex items-center gap-1 text-xs text-white bg-[#1e3a5f] hover:bg-[#2a4f7f] px-3 py-1.5 rounded-md transition-colors"
+                        >
+                          <FileText size={12} />
+                          ออก 50 ทวิ
+                        </button>
                       )}
                     </td>
                   </tr>

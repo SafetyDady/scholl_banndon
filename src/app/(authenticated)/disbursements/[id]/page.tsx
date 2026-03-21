@@ -23,6 +23,7 @@ interface Contractor {
 interface PaymentPayee {
   paymentDate: string
   payeeName: string
+  contractorId: number | null
   amount: number
   taxPercent: number
   taxWithheld: number
@@ -255,6 +256,7 @@ export default function DisbursementDetailPage() {
           payees: [{
             paymentDate: today,
             payeeName: item.payeeName || '',
+            contractorId: null,
             amount: item.amount,
             taxPercent: 0,
             taxWithheld: 0,
@@ -326,6 +328,7 @@ export default function DisbursementDetailPage() {
       payees.push({
         paymentDate: today,
         payeeName: '',
+        contractorId: null,
         amount: remaining > 0 ? remaining : 0,
         taxPercent: 0,
         taxWithheld: 0,
@@ -386,6 +389,7 @@ export default function DisbursementDetailPage() {
               itemId: e.itemId,
               paymentDate: p.paymentDate,
               payeeName: p.payeeName,
+              contractorId: p.contractorId,
               amount: p.amount,
               taxPercent: p.taxPercent,
               taxWithheld: p.taxWithheld,
@@ -868,7 +872,10 @@ export default function DisbursementDetailPage() {
                                   <ContractorSearchInput
                                     value={payee.payeeName}
                                     contractors={contractors}
-                                    onSelect={(name) => updatePayee(idx, pIdx, 'payeeName', name)}
+                                    onSelect={(name, contractor) => {
+                                      updatePayee(idx, pIdx, 'payeeName', name)
+                                      if (contractor?.id) updatePayee(idx, pIdx, 'contractorId', contractor.id)
+                                    }}
                                     onQuickAdd={(name) => handleQuickAddContractor(name, idx, pIdx)}
                                   />
                                 </div>
