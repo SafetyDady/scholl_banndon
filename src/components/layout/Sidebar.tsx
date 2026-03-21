@@ -23,6 +23,7 @@ import {
   UserCheck,
   GitBranch,
   School,
+  FileSpreadsheet,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SIDEBAR_SECTIONS, type RoleCode } from '@/lib/constants'
@@ -45,6 +46,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   UserCheck,
   GitBranch,
   School,
+  FileSpreadsheet,
 }
 
 interface SidebarProps {

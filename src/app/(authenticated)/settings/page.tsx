@@ -10,6 +10,7 @@ import {
   Users,
   Shield,
   ChevronRight,
+  FileSpreadsheet,
 } from 'lucide-react'
 
 interface UserInfo {
@@ -47,6 +48,12 @@ export default function SettingsPage() {
       description: 'จัดการประเภทเงินงบประมาณและนอกงบประมาณ',
       href: '/settings/budget-types',
       icon: <Tags size={24} />,
+    },
+    {
+      title: 'รายการรายงานเงินคงเหลือ',
+      description: 'ตั้งค่ารายการที่แสดงในรายงานเงินคงเหลือ',
+      href: '/settings/balance-template',
+      icon: <FileSpreadsheet size={24} />,
     },
     {
       title: 'ตั้งค่า Workflow',

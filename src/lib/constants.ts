@@ -72,6 +72,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
       { label: 'บัญชีธนาคาร', icon: 'Landmark', path: '/settings/bank-accounts', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'ประเภทเงิน', icon: 'Tags', path: '/settings/budget-types', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'ผู้รับจ้าง', icon: 'UserCheck', path: '/settings/contractors', roles: ['FINANCE_OFFICER', 'ADMIN'] },
+      { label: 'รายการรายงานคงเหลือ', icon: 'FileSpreadsheet', path: '/settings/balance-template', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'ตั้งค่า Workflow', icon: 'GitBranch', path: '/settings/workflow', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'ผู้ใช้งาน', icon: 'Users', path: '/settings/users', roles: ['ADMIN'] },
       { label: 'สิทธิ์การใช้งาน', icon: 'Shield', path: '/settings/permissions', roles: ['ADMIN'] },

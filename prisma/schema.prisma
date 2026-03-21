@@ -36,6 +36,7 @@ model User {
   moneyTransactions     MoneyTransaction[]  @relation("TransactionCreatedBy")
   reconciliations       Reconciliation[]    @relation("ReconciliationCreatedBy")
   bankStatements        BankStatement[]     @relation("StatementCreatedBy")
+  balanceReportsIssued  BalanceReportIssued[] @relation("BalanceReportIssuedBy")
 }
 
 model Session {
@@ -82,10 +83,11 @@ model BankAccount {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  budgetTypes        BudgetType[]
-  moneyTransactions  MoneyTransaction[]
-  reconciliations    Reconciliation[]
-  bankStatements     BankStatement[]
+  budgetTypes             BudgetType[]
+  moneyTransactions       MoneyTransaction[]
+  reconciliations         Reconciliation[]
+  bankStatements          BankStatement[]
+  balanceReportTemplates  BalanceReportTemplate[]
 }
 
 model BudgetType {
@@ -104,7 +106,8 @@ model BudgetType {
   bankAccount        BankAccount?        @relation(fields: [bankAccountId], references: [id])
   disbursementGroups DisbursementGroup[]
   moneyTransactions  MoneyTransaction[]
-  balanceEntries     BalanceEntry[]
+  balanceEntries          BalanceEntry[]
+  balanceReportTemplates  BalanceReportTemplate[]
 }
 
 // ===== APPROVAL REQUEST (บันทึกขออนุมัติ) =====
@@ -277,6 +280,42 @@ model BalanceEntry {
   budgetType    BudgetType    @relation(fields: [budgetTypeId], references: [id])
 
   @@unique([balanceReportId, budgetTypeId])
+}
+
+// ===== BALANCE REPORT TEMPLATE (รายการรายงานเงินคงเหลือ) =====
+
+model BalanceReportTemplate {
+  id                  Int      @id @default(autoincrement())
+  name                String
+  section             String   // BUDGET_REVENUE | NON_BUDGET
+  parentId            Int?
+  column              String   @default("BANK") // CASH | BANK | DEPT
+  sourceType          String   @default("BUDGET_TYPE") // BANK_ACCOUNT | BUDGET_TYPE | MANUAL
+  sourceBankAccountId Int?
+  sourceBudgetTypeId  Int?
+  openingBalance      Float    @default(0)
+  sortOrder           Int      @default(0)
+  isActive            Boolean  @default(true)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  parent   BalanceReportTemplate?  @relation("TemplateSubItems", fields: [parentId], references: [id])
+  children BalanceReportTemplate[] @relation("TemplateSubItems")
+
+  sourceBankAccount BankAccount? @relation(fields: [sourceBankAccountId], references: [id])
+  sourceBudgetType  BudgetType?  @relation(fields: [sourceBudgetTypeId], references: [id])
+}
+
+model BalanceReportIssued {
+  id         Int      @id @default(autoincrement())
+  reportDate DateTime
+  fiscalYear Int
+  issuedAt   DateTime @default(now())
+  issuedById Int
+
+  issuedBy User @relation("BalanceReportIssuedBy", fields: [issuedById], references: [id])
+
+  @@unique([reportDate, fiscalYear])
 }
 
 // ===== CONTRACTOR (ผู้รับจ้าง) =====

@@ -1,184 +1,227 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-import Link from 'next/link'
-import { formatCurrency, getCurrentFiscalYear } from '@/lib/utils'
+import { useEffect, useState, useCallback } from 'react'
+import { formatCurrency, formatShortDate, getCurrentFiscalYear } from '@/lib/utils'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { Printer, Inbox } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import {
+  FileText,
+  Download,
+  CheckCircle2,
+  AlertTriangle,
+  Loader2,
+  Inbox,
+} from 'lucide-react'
 
-interface BudgetTypeBalance {
+// ===== Types =====
+
+interface BankAccountInfo {
   id: number
-  name: string
-  code: string
-  category: string
-  parentId: number | null
-  totalReceived: number
-  totalDisbursed: number
-  balance: number
+  bankName: string
+  accountNumber: string
+  accountName: string
 }
 
-interface Subtotal {
-  totalReceived: number
-  totalDisbursed: number
-  balance: number
+interface Movement {
+  id: number
+  bankAccount: BankAccountInfo
+  withdrawal: number
+  deposit: number
+  description: string | null
 }
 
-interface BalanceResponse {
+interface DateEntry {
+  date: string
+  movements: Movement[]
+  isIssued: boolean
+  issuedAt: string | null
+}
+
+interface ChangesResponse {
+  dates: DateEntry[]
   fiscalYear: number
-  budgetCategory: BudgetTypeBalance[]
-  nonBudgetCategory: BudgetTypeBalance[]
-  budgetSubtotal: Subtotal
-  nonBudgetSubtotal: Subtotal
-  grandTotal: Subtotal
 }
 
-export default function BalancePage() {
-  const [data, setData] = useState<BalanceResponse | null>(null)
+// ===== Component =====
+
+export default function BalanceChangesPage() {
+  const [data, setData] = useState<ChangesResponse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [issuingDate, setIssuingDate] = useState<string | null>(null)
   const fiscalYear = getCurrentFiscalYear()
 
-  useEffect(() => {
-    fetch(`/api/balance?fiscalYear=${fiscalYear}`)
-      .then((res) => res.json())
-      .then((json) => setData(json))
-      .catch(console.error)
-      .finally(() => setLoading(false))
+  const fetchData = useCallback(async () => {
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/balance/changes?fiscalYear=${fiscalYear}`)
+      const json = await res.json()
+      setData(json)
+    } catch (err) {
+      console.error(err)
+    } finally {
+      setLoading(false)
+    }
   }, [fiscalYear])
 
-  const renderRows = (items: BudgetTypeBalance[]) =>
-    items.map((bt) => (
-      <tr key={bt.id} className="hover:bg-gray-50 border-b transition-colors">
-        <td className="px-4 py-3 text-gray-900">{bt.name}</td>
-        <td className="px-4 py-3 text-right font-mono text-gray-900">
-          {formatCurrency(bt.totalReceived)}
-        </td>
-        <td className="px-4 py-3 text-right font-mono text-gray-900">
-          {formatCurrency(bt.totalDisbursed)}
-        </td>
-        <td className="px-4 py-3 text-right font-mono font-medium text-[#1e3a5f]">
-          {formatCurrency(bt.balance)}
-        </td>
-      </tr>
-    ))
+  useEffect(() => {
+    fetchData()
+  }, [fetchData])
 
-  const renderSubtotalRow = (label: string, subtotal: Subtotal) => (
-    <tr className="bg-blue-50/50 border-b border-blue-200">
-      <td className="px-4 py-3 font-semibold text-[#1e3a5f]">{label}</td>
-      <td className="px-4 py-3 text-right font-mono font-semibold text-[#1e3a5f]">
-        {formatCurrency(subtotal.totalReceived)}
-      </td>
-      <td className="px-4 py-3 text-right font-mono font-semibold text-[#1e3a5f]">
-        {formatCurrency(subtotal.totalDisbursed)}
-      </td>
-      <td className="px-4 py-3 text-right font-mono font-bold text-[#1e3a5f]">
-        {formatCurrency(subtotal.balance)}
-      </td>
-    </tr>
-  )
+  const handleIssue = async (date: string) => {
+    if (!confirm(`ต้องการออกรายงานเงินคงเหลือวันที่ ${formatShortDate(date)} หรือไม่?`)) return
+
+    setIssuingDate(date)
+    try {
+      const res = await fetch(`/api/balance/issue/${date}`, {
+        method: 'POST',
+      })
+
+      if (res.ok) {
+        // Refresh data to reflect the new status
+        await fetchData()
+      } else {
+        const err = await res.json()
+        alert(err.error || 'เกิดข้อผิดพลาด')
+      }
+    } catch (err) {
+      console.error(err)
+      alert('เกิดข้อผิดพลาดในการออกรายงาน')
+    } finally {
+      setIssuingDate(null)
+    }
+  }
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="รายงานเงินคงเหลือ"
-        subtitle={`ปีงบประมาณ ${fiscalYear}`}
-        actions={
-          <Link
-            href="/print/balance"
-            target="_blank"
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
-          >
-            <Printer size={16} />
-            พิมพ์รายงาน
-          </Link>
-        }
+        subtitle={`ปีงบประมาณ ${fiscalYear} - รายการเปลี่ยนแปลง`}
       />
 
       {/* Table */}
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         {loading ? (
-          <div className="p-8 space-y-3">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <div key={i} className="h-12 animate-pulse bg-gray-200 rounded" />
-            ))}
+          <div className="flex items-center justify-center py-16">
+            <Loader2 className="h-6 w-6 animate-spin text-[#1e3a5f]" />
+            <span className="ml-2 text-sm text-gray-500">กำลังโหลด...</span>
           </div>
-        ) : data &&
-          (data.budgetCategory.length > 0 || data.nonBudgetCategory.length > 0) ? (
+        ) : !data?.dates?.length ? (
+          <div className="flex flex-col items-center justify-center py-16">
+            <Inbox size={48} className="text-gray-300" />
+            <p className="mt-3 text-sm text-gray-400">
+              ไม่พบรายการเคลื่อนไหว
+            </p>
+          </div>
+        ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-[#1e3a5f] text-white">
+                  <th className="px-4 py-3 text-left text-xs uppercase tracking-wider font-medium w-[120px]">
+                    วันที่
+                  </th>
                   <th className="px-4 py-3 text-left text-xs uppercase tracking-wider font-medium">
-                    ประเภทเงิน
+                    รายการเปลี่ยนแปลง
                   </th>
-                  <th className="px-4 py-3 text-right text-xs uppercase tracking-wider font-medium">
-                    ยอดรับเข้า
+                  <th className="px-4 py-3 text-center text-xs uppercase tracking-wider font-medium w-[140px]">
+                    สถานะ
                   </th>
-                  <th className="px-4 py-3 text-right text-xs uppercase tracking-wider font-medium">
-                    ยอดเบิกจ่าย
-                  </th>
-                  <th className="px-4 py-3 text-right text-xs uppercase tracking-wider font-medium">
-                    คงเหลือ
+                  <th className="px-4 py-3 text-center text-xs uppercase tracking-wider font-medium w-[150px]">
+                    รายงาน
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {/* งบประมาณ */}
-                {data.budgetCategory.length > 0 && (
-                  <>
-                    <tr className="bg-gray-100 border-b">
-                      <td
-                        colSpan={4}
-                        className="px-4 py-2 font-semibold text-sm text-[#1e3a5f]"
-                      >
-                        งบประมาณ
-                      </td>
-                    </tr>
-                    {renderRows(data.budgetCategory)}
-                    {renderSubtotalRow('รวมงบประมาณ', data.budgetSubtotal)}
-                  </>
-                )}
+                {data.dates.map((entry) => (
+                  <tr
+                    key={entry.date}
+                    className="border-b border-[#e2e8f0] hover:bg-[#f8fafc] transition-colors align-top"
+                  >
+                    {/* Date */}
+                    <td className="px-4 py-3 whitespace-nowrap font-medium text-[#1e3a5f]">
+                      {formatShortDate(entry.date)}
+                    </td>
 
-                {/* นอกงบประมาณ */}
-                {data.nonBudgetCategory.length > 0 && (
-                  <>
-                    <tr className="bg-gray-100 border-b">
-                      <td
-                        colSpan={4}
-                        className="px-4 py-2 font-semibold text-sm text-[#1e3a5f]"
-                      >
-                        นอกงบประมาณ
-                      </td>
-                    </tr>
-                    {renderRows(data.nonBudgetCategory)}
-                    {renderSubtotalRow(
-                      'รวมนอกงบประมาณ',
-                      data.nonBudgetSubtotal
-                    )}
-                  </>
-                )}
+                    {/* Movements */}
+                    <td className="px-4 py-3">
+                      <div className="space-y-1">
+                        {entry.movements.map((m) => {
+                          if (m.withdrawal > 0) {
+                            return (
+                              <div key={m.id} className="flex items-baseline gap-2">
+                                <span className="text-red-600 font-mono text-sm font-medium">
+                                  -{formatCurrency(m.withdrawal)}
+                                </span>
+                                <span className="text-gray-500 text-xs">
+                                  {m.description || m.bankAccount.accountName}
+                                </span>
+                              </div>
+                            )
+                          }
+                          if (m.deposit > 0) {
+                            return (
+                              <div key={m.id} className="flex items-baseline gap-2">
+                                <span className="text-[#16a34a] font-mono text-sm font-medium">
+                                  +{formatCurrency(m.deposit)}
+                                </span>
+                                <span className="text-gray-500 text-xs">
+                                  {m.description || m.bankAccount.accountName}
+                                </span>
+                              </div>
+                            )
+                          }
+                          return null
+                        })}
+                      </div>
+                    </td>
+
+                    {/* Status */}
+                    <td className="px-4 py-3 text-center">
+                      {entry.isIssued ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          ออกแล้ว
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">
+                          <AlertTriangle className="h-3.5 w-3.5" />
+                          ยังไม่ออก
+                        </span>
+                      )}
+                    </td>
+
+                    {/* Action */}
+                    <td className="px-4 py-3 text-center">
+                      {entry.isIssued ? (
+                        <a
+                          href={`/api/balance/issue/${entry.date}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#1e3a5f] hover:text-[#162d4a] hover:underline"
+                        >
+                          <Download className="h-3.5 w-3.5" />
+                          ดาวน์โหลด
+                        </a>
+                      ) : (
+                        <Button
+                          onClick={() => handleIssue(entry.date)}
+                          disabled={issuingDate === entry.date}
+                          className="bg-[#1e3a5f] text-white hover:bg-[#162d4a] text-xs"
+                          size="sm"
+                        >
+                          {issuingDate === entry.date ? (
+                            <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <FileText className="mr-1 h-3.5 w-3.5" />
+                          )}
+                          ออกรายงาน
+                        </Button>
+                      )}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
-              <tfoot>
-                <tr className="bg-[#1e3a5f]/10 border-t-2 border-[#1e3a5f]">
-                  <td className="px-4 py-3 font-bold text-[#1e3a5f]">
-                    รวมทั้งสิ้น
-                  </td>
-                  <td className="px-4 py-3 text-right font-bold font-mono text-[#1e3a5f]">
-                    {formatCurrency(data.grandTotal.totalReceived)}
-                  </td>
-                  <td className="px-4 py-3 text-right font-bold font-mono text-[#1e3a5f]">
-                    {formatCurrency(data.grandTotal.totalDisbursed)}
-                  </td>
-                  <td className="px-4 py-3 text-right font-bold font-mono text-[#1e3a5f]">
-                    {formatCurrency(data.grandTotal.balance)}
-                  </td>
-                </tr>
-              </tfoot>
             </table>
-          </div>
-        ) : (
-          <div className="flex flex-col items-center justify-center py-16">
-            <Inbox size={48} className="text-gray-300" />
-            <p className="mt-3 text-sm text-gray-400">ไม่พบข้อมูลเงินคงเหลือ</p>
           </div>
         )}
       </div>
