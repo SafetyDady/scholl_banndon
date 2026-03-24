@@ -1,16 +1,15 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState } from 'react'
 import { formatCurrency, formatShortDate } from '@/lib/utils'
 import { PageHeader } from '@/components/shared/PageHeader'
-import { Button } from '@/components/ui/button'
 import {
   Inbox,
-  ChevronLeft,
-  ChevronRight,
   ArrowDownCircle,
   ArrowUpCircle,
-  Loader2,
+  TrendingDown,
+  TrendingUp,
+  Activity,
 } from 'lucide-react'
 
 interface StatementItem {
@@ -26,223 +25,190 @@ interface StatementItem {
     accountNumber: string
     accountName: string
   }
-  approvalRequest: {
-    memoNumber: string | null
-    totalAmount: number
-  } | null
-}
-
-interface ApiResponse {
-  data: StatementItem[]
-  total: number
-  page: number
-  totalPages: number
 }
 
 export default function TransactionsPage() {
-  const [data, setData] = useState<ApiResponse | null>(null)
+  const [statements, setStatements] = useState<StatementItem[]>([])
   const [loading, setLoading] = useState(true)
-  const [page, setPage] = useState(1)
-  const [filterType, setFilterType] = useState<'all' | 'withdrawal' | 'deposit'>('all')
-  const [dateFrom, setDateFrom] = useState('')
-  const [dateTo, setDateTo] = useState('')
-
-  const fetchData = useCallback(async () => {
-    setLoading(true)
-    try {
-      // Fetch from bank-statements API (all accounts)
-      const params = new URLSearchParams({
-        page: String(page),
-        limit: '30',
-      })
-      if (dateFrom) params.set('dateFrom', dateFrom)
-      if (dateTo) params.set('dateTo', dateTo)
-
-      const res = await fetch(`/api/bank-statements?${params}`)
-      const json = await res.json()
-
-      // Client-side filter by type
-      if (filterType !== 'all' && json.data) {
-        json.data = json.data.filter((s: StatementItem) =>
-          filterType === 'withdrawal' ? s.withdrawal > 0 : s.deposit > 0,
-        )
-      }
-
-      setData(json)
-    } catch (err) {
-      console.error(err)
-    } finally {
-      setLoading(false)
-    }
-  }, [page, filterType, dateFrom, dateTo])
+  const [filter, setFilter] = useState<'all' | 'withdrawal' | 'deposit'>('all')
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData])
+    const fetchAll = async () => {
+      try {
+        const res = await fetch('/api/bank-statements?limit=200')
+        if (res.ok) {
+          const json = await res.json()
+          setStatements(json.data || [])
+        }
+      } catch (error) {
+        console.error('Failed to fetch:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchAll()
+  }, [])
+
+  const filtered = statements.filter((s) => {
+    if (filter === 'withdrawal') return s.withdrawal > 0
+    if (filter === 'deposit') return s.deposit > 0
+    return true
+  })
+
+  const totalWithdrawal = statements.reduce((sum, s) => sum + s.withdrawal, 0)
+  const totalDeposit = statements.reduce((sum, s) => sum + s.deposit, 0)
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="เงินเคลื่อนไหว"
-        subtitle="ภาพรวมรายการเงินเข้า-ออกจากทุกบัญชี"
+        subtitle="ภาพรวมรายการเงินเข้า-ออกจากทุกบัญชี (ข้อมูลจากสมุดบัญชี)"
       />
 
-      {/* Filters */}
-      <div className="flex flex-wrap items-end gap-4 rounded-lg border border-[#e2e8f0] bg-white p-4">
-        <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500">ประเภท</label>
-          <select
-            value={filterType}
-            onChange={(e) => { setFilterType(e.target.value as 'all' | 'withdrawal' | 'deposit'); setPage(1) }}
-            className="rounded-md border border-[#e2e8f0] bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="bg-card rounded-lg border border-border p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-info/10 flex items-center justify-center">
+              <Activity size={20} className="text-info" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">รายการทั้งหมด</p>
+              <p className="text-xl font-bold">{statements.length}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-card rounded-lg border border-border p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-destructive/10 flex items-center justify-center">
+              <TrendingDown size={20} className="text-destructive" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">ยอดถอนรวม</p>
+              <p className="text-xl font-bold font-financial text-destructive">
+                {formatCurrency(totalWithdrawal)}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-card rounded-lg border border-border p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-lg bg-success/10 flex items-center justify-center">
+              <TrendingUp size={20} className="text-success" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">ยอดฝากรวม</p>
+              <p className="text-xl font-bold font-financial text-success">
+                {formatCurrency(totalDeposit)}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Filter */}
+      <div className="bg-card rounded-lg border border-border p-4">
+        <div className="flex gap-2">
+          <button
+            onClick={() => setFilter('all')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              filter === 'all'
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
           >
-            <option value="all">ทั้งหมด</option>
-            <option value="withdrawal">เงินออก (ถอน)</option>
-            <option value="deposit">เงินเข้า (ฝาก)</option>
-          </select>
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500">ตั้งแต่วันที่</label>
-          <input
-            type="date"
-            value={dateFrom}
-            onChange={(e) => { setDateFrom(e.target.value); setPage(1) }}
-            className="rounded-md border border-[#e2e8f0] px-3 py-2 text-sm focus:border-primary focus:outline-none"
-          />
-        </div>
-        <div>
-          <label className="mb-1 block text-xs font-medium text-gray-500">ถึงวันที่</label>
-          <input
-            type="date"
-            value={dateTo}
-            onChange={(e) => { setDateTo(e.target.value); setPage(1) }}
-            className="rounded-md border border-[#e2e8f0] px-3 py-2 text-sm focus:border-primary focus:outline-none"
-          />
-        </div>
-        {(dateFrom || dateTo || filterType !== 'all') && (
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => { setFilterType('all'); setDateFrom(''); setDateTo(''); setPage(1) }}
-            className="text-gray-500"
+            ทั้งหมด ({statements.length})
+          </button>
+          <button
+            onClick={() => setFilter('withdrawal')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
+              filter === 'withdrawal'
+                ? 'bg-destructive text-destructive-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
           >
-            ล้างตัวกรอง
-          </Button>
-        )}
+            <ArrowUpCircle size={14} />
+            ถอน ({statements.filter((s) => s.withdrawal > 0).length})
+          </button>
+          <button
+            onClick={() => setFilter('deposit')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-1 ${
+              filter === 'deposit'
+                ? 'bg-success text-success-foreground'
+                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+            }`}
+          >
+            <ArrowDownCircle size={14} />
+            ฝาก ({statements.filter((s) => s.deposit > 0).length})
+          </button>
+        </div>
       </div>
 
       {/* Table */}
-      <div className="rounded-lg border border-[#e2e8f0] bg-white">
+      <div className="bg-card rounded-lg border border-border overflow-hidden">
         {loading ? (
-          <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-            <span className="ml-2 text-sm text-gray-500">กำลังโหลด...</span>
+          <div className="animate-pulse p-6 space-y-4">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="h-10 bg-muted rounded" />
+            ))}
           </div>
-        ) : !data?.data?.length ? (
-          <div className="flex flex-col items-center justify-center py-16 text-gray-400">
-            <Inbox className="mb-2 h-10 w-10" />
-            <p className="text-sm">ไม่มีรายการเงินเคลื่อนไหว</p>
+        ) : filtered.length === 0 ? (
+          <div className="p-12 text-center text-muted-foreground">
+            <Inbox size={48} className="mx-auto mb-4 opacity-30" />
+            <p>ไม่มีรายการเงินเคลื่อนไหว</p>
           </div>
         ) : (
-          <>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[#e2e8f0] bg-[#f8fafc]">
-                    <th className="px-4 py-3 text-left font-medium text-primary">วันที่</th>
-                    <th className="px-4 py-3 text-center font-medium text-primary">ประเภท</th>
-                    <th className="px-4 py-3 text-left font-medium text-primary">บัญชี</th>
-                    <th className="px-4 py-3 text-left font-medium text-primary">หมายเหตุ</th>
-                    <th className="px-4 py-3 text-left font-medium text-primary">ผูกกับ</th>
-                    <th className="px-4 py-3 text-right font-medium text-primary">จำนวนเงิน</th>
-                    <th className="px-4 py-3 text-right font-medium text-primary">คงเหลือ</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.data.map((s) => {
-                    const isWithdrawal = s.withdrawal > 0
-                    const amount = isWithdrawal ? s.withdrawal : s.deposit
-                    return (
-                      <tr
-                        key={s.id}
-                        className="border-b border-[#e2e8f0] transition-colors hover:bg-[#f8fafc]"
-                      >
-                        <td className="whitespace-nowrap px-4 py-3">
-                          {formatShortDate(s.transactionDate)}
-                        </td>
-                        <td className="px-4 py-3 text-center">
-                          {isWithdrawal ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-destructive/15 px-2.5 py-0.5 text-xs font-medium text-destructive">
-                              <ArrowUpCircle className="h-3.5 w-3.5" />
-                              ถอน
-                            </span>
-                          ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2.5 py-0.5 text-xs font-medium text-success">
-                              <ArrowDownCircle className="h-3.5 w-3.5" />
-                              ฝาก
-                            </span>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          <div className="text-sm font-medium">{s.bankAccount.bankName}</div>
-                          <div className="text-xs text-gray-500">{s.bankAccount.accountNumber}</div>
-                        </td>
-                        <td className="max-w-[200px] truncate px-4 py-3 text-gray-600">
-                          {s.description || '-'}
-                        </td>
-                        <td className="px-4 py-3">
-                          {s.approvalRequest ? (
-                            <span className="text-xs text-primary font-medium">
-                              {s.approvalRequest.memoNumber || `#${s.id}`}
-                            </span>
-                          ) : (
-                            <span className="text-xs text-gray-400">-</span>
-                          )}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-right font-medium font-financial">
-                          {isWithdrawal ? (
-                            <span className="text-red-600">-{formatCurrency(amount)}</span>
-                          ) : (
-                            <span className="text-green-600">+{formatCurrency(amount)}</span>
-                          )}
-                        </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-right text-gray-700 font-financial">
-                          {formatCurrency(s.balance)}
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
-
-            {/* Pagination */}
-            {data.totalPages > 1 && (
-              <div className="flex items-center justify-between border-t border-[#e2e8f0] px-4 py-3">
-                <span className="text-xs text-gray-500">
-                  หน้า {data.page} / {data.totalPages} ({data.total} รายการ)
-                </span>
-                <div className="flex gap-1">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page <= 1}
-                    onClick={() => setPage((p) => p - 1)}
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={page >= data.totalPages}
-                    onClick={() => setPage((p) => p + 1)}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            )}
-          </>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="bg-primary/5 border-b border-border">
+                <th className="px-4 py-3 text-left font-semibold text-primary">วันที่</th>
+                <th className="px-4 py-3 text-center font-semibold text-primary">ประเภท</th>
+                <th className="px-4 py-3 text-left font-semibold text-primary">บัญชี</th>
+                <th className="px-4 py-3 text-left font-semibold text-primary">รายละเอียด</th>
+                <th className="px-4 py-3 text-right font-semibold text-primary">จำนวนเงิน</th>
+                <th className="px-4 py-3 text-right font-semibold text-primary">คงเหลือ</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.map((s) => (
+                <tr key={s.id} className="border-b border-border hover:bg-muted/30">
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {formatShortDate(s.transactionDate)}
+                  </td>
+                  <td className="px-4 py-3 text-center">
+                    {s.withdrawal > 0 ? (
+                      <span className="inline-flex items-center gap-1 text-xs text-destructive bg-destructive/10 px-2 py-1 rounded-full">
+                        <ArrowUpCircle size={12} />
+                        ถอน
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 text-xs text-success bg-success/10 px-2 py-1 rounded-full">
+                        <ArrowDownCircle size={12} />
+                        ฝาก
+                      </span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3">
+                    <div className="text-xs text-muted-foreground">{s.bankAccount.bankName}</div>
+                    <div className="font-medium">{s.bankAccount.accountName}</div>
+                  </td>
+                  <td className="px-4 py-3 text-muted-foreground">
+                    {s.description || '-'}
+                  </td>
+                  <td className="px-4 py-3 text-right font-financial font-semibold">
+                    {s.withdrawal > 0 ? (
+                      <span className="text-destructive">-{formatCurrency(s.withdrawal)}</span>
+                    ) : (
+                      <span className="text-success">+{formatCurrency(s.deposit)}</span>
+                    )}
+                  </td>
+                  <td className="px-4 py-3 text-right font-financial">
+                    {formatCurrency(s.balance)}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         )}
       </div>
     </div>

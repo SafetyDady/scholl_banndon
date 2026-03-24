@@ -51,6 +51,22 @@ export async function GET(
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
 
+    // Get school info for signatures
+    const schoolInfoRows = await prisma.schoolInfo.findMany()
+    const si: Record<string, string> = {}
+    for (const row of schoolInfoRows) {
+      si[row.key] = row.value
+    }
+
+    const schoolName = si['school_name'] || 'โรงเรียนวัดบ้านดอน'
+    const schoolDept = si['school_dept'] || 'สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาระยองเขต 1'
+    const principalName = si['principal_name'] || ''
+    const principalTitle = si['principal_title'] || `ผู้อำนวยการ${schoolName}`
+    const vicePrincipalName = si['vice_principal_1_name'] || ''
+    const vicePrincipalTitle = si['vice_principal_1_title'] || `รองผู้อำนวยการ${schoolName}`
+    const financeName = si['finance_name'] || approval.createdBy.fullName
+    const financeTitle = si['finance_title'] || 'เจ้าหน้าที่การเงิน'
+
     // Format Thai date
     const d = new Date(approval.requestDate)
     const thaiDate = d.toLocaleDateString('th-TH', {
@@ -116,7 +132,7 @@ export async function GET(
             font: 'TH Sarabun New',
           }),
           new TextRun({
-            text: '  โรงเรียนวัดบ้านดอน สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาระยองเขต 1',
+            text: `  ${schoolName} ${schoolDept}`,
             size: 28,
             font: 'TH Sarabun New',
           }),
@@ -197,7 +213,7 @@ export async function GET(
             font: 'TH Sarabun New',
           }),
           new TextRun({
-            text: '    ผู้อำนวยการโรงเรียนวัดบ้านดอน',
+            text: `    ${principalTitle}`,
             size: 28,
             font: 'TH Sarabun New',
           }),
@@ -212,7 +228,7 @@ export async function GET(
         indent: { firstLine: convertMillimetersToTwip(12.5) },
         children: [
           new TextRun({
-            text: `ด้วยข้าพเจ้า ${approval.createdBy.fullName} ตำแหน่ง ${approval.createdBy.position}โรงเรียนวัดบ้านดอน ขอเบิกเงิน`,
+            text: `ด้วยข้าพเจ้า ${approval.createdBy.fullName} ตำแหน่ง ${approval.createdBy.position} ${schoolName} ขอเบิกเงิน`,
             size: 28,
             font: 'TH Sarabun New',
           }),
@@ -393,7 +409,7 @@ export async function GET(
         spacing: { after: 20 },
         children: [
           new TextRun({
-            text: `(${approval.createdBy.fullName})`,
+            text: `(${financeName})`,
             size: 28,
             font: 'TH Sarabun New',
           }),
@@ -407,7 +423,7 @@ export async function GET(
         spacing: { after: 200 },
         children: [
           new TextRun({
-            text: 'เจ้าหน้าที่การเงิน',
+            text: financeTitle,
             size: 28,
             font: 'TH Sarabun New',
           }),
@@ -466,7 +482,7 @@ export async function GET(
         spacing: { after: 20 },
         children: [
           new TextRun({
-            text: '(นางภควรรณ  มีเจริญ)',
+            text: `(${vicePrincipalName})`,
             size: 28,
             font: 'TH Sarabun New',
           }),
@@ -480,7 +496,7 @@ export async function GET(
         spacing: { after: 100 },
         children: [
           new TextRun({
-            text: 'รองผู้อำนวยการโรงเรียนวัดบ้านดอน',
+            text: vicePrincipalTitle,
             size: 28,
             font: 'TH Sarabun New',
           }),
@@ -523,7 +539,7 @@ export async function GET(
         spacing: { after: 20 },
         children: [
           new TextRun({
-            text: '(นางสาววิภาพรรณ  อุบล)',
+            text: `(${principalName})`,
             size: 28,
             font: 'TH Sarabun New',
           }),
@@ -536,7 +552,7 @@ export async function GET(
         alignment: AlignmentType.CENTER,
         children: [
           new TextRun({
-            text: 'ผู้อำนวยการโรงเรียนวัดบ้านดอน',
+            text: principalTitle,
             size: 28,
             font: 'TH Sarabun New',
           }),
