@@ -225,7 +225,7 @@ export default function ReconciliationPage() {
               type="date"
               value={selectedDate}
               onChange={(e) => handleDateSelect(e.target.value)}
-              className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+              className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
             />
           </div>
         </div>
@@ -235,7 +235,7 @@ export default function ReconciliationPage() {
       {selectedDate && (
         <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
           <div className="px-4 py-3 border-b bg-gray-50">
-            <h3 className="text-sm font-semibold text-[#1e3a5f]">
+            <h3 className="text-sm font-semibold text-primary">
               บัญชีที่มีเงินเคลื่อนไหว วันที่ {formatThaiDate(selectedDate)}
             </h3>
           </div>
@@ -283,7 +283,7 @@ export default function ReconciliationPage() {
                             {row.accountNumber} ({row.accountName})
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-right font-mono text-gray-900">
+                        <td className="px-4 py-3 text-right font-mono text-gray-900 font-financial">
                           {formatCurrency(row.systemBalance)}
                         </td>
                         <td className="px-4 py-3">
@@ -295,12 +295,12 @@ export default function ReconciliationPage() {
                               handleActualBalanceChange(index, e.target.value)
                             }
                             placeholder="0.00"
-                            className="w-full text-right border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-mono focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+                            className="w-full text-right border border-gray-300 rounded-lg px-3 py-1.5 text-sm font-mono focus:ring-2 focus:ring-primary/20 focus:border-primary"
                           />
                         </td>
                         <td
                           className={cn(
-                            'px-4 py-3 text-right font-mono font-medium',
+                            'px-4 py-3 text-right font-mono font-medium font-financial',
                             row.actualBalance
                               ? row.isMatched
                                 ? 'text-green-700'
@@ -358,7 +358,7 @@ export default function ReconciliationPage() {
                             }
                             rows={2}
                             placeholder="ระบุเหตุผลที่ยอดไม่ตรงกัน"
-                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] resize-none"
+                            className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
                           />
                         </div>
                       )
@@ -371,7 +371,7 @@ export default function ReconciliationPage() {
                 <Button
                   onClick={handleSave}
                   disabled={saving}
-                  className="bg-[#1e3a5f] hover:bg-[#163050] text-white"
+                  className="bg-primary hover:bg-primary/80 text-white"
                 >
                   <Save size={16} />
                   {saving ? 'กำลังบันทึก...' : 'บันทึกกระทบยอด'}
@@ -392,8 +392,8 @@ export default function ReconciliationPage() {
       {/* History Section */}
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         <div className="px-4 py-3 border-b bg-gray-50 flex items-center gap-2">
-          <History size={16} className="text-[#1e3a5f]" />
-          <h3 className="text-sm font-semibold text-[#1e3a5f]">
+          <History size={16} className="text-primary" />
+          <h3 className="text-sm font-semibold text-primary">
             ประวัติการกระทบยอด
           </h3>
         </div>
@@ -447,15 +447,15 @@ export default function ReconciliationPage() {
                     <td className="px-4 py-3 text-gray-600">
                       {item.bankAccount.bankName} - {item.bankAccount.accountNumber}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-gray-900">
+                    <td className="px-4 py-3 text-right font-mono text-gray-900 font-financial">
                       {formatCurrency(item.systemBalance)}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-gray-900">
+                    <td className="px-4 py-3 text-right font-mono text-gray-900 font-financial">
                       {formatCurrency(item.actualBalance)}
                     </td>
                     <td
                       className={cn(
-                        'px-4 py-3 text-right font-mono font-medium',
+                        'px-4 py-3 text-right font-mono font-medium font-financial',
                         item.isMatched ? 'text-green-700' : 'text-red-700'
                       )}
                     >

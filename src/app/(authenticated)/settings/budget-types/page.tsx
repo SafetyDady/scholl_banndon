@@ -296,7 +296,7 @@ export default function BudgetTypesPage() {
             onClick={() => setShowModal(false)}
           />
           <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">
-            <h2 className="text-lg font-semibold text-[#1e3a5f] mb-4">
+            <h2 className="text-lg font-semibold text-primary mb-4">
               {editingId ? 'แก้ไขประเภทเงิน' : 'เพิ่มประเภทเงิน'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -308,7 +308,7 @@ export default function BudgetTypesPage() {
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   required
                 />
               </div>
@@ -320,7 +320,7 @@ export default function BudgetTypesPage() {
                   type="text"
                   value={form.code}
                   onChange={(e) => setForm({ ...form, code: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   required
                 />
               </div>
@@ -333,7 +333,7 @@ export default function BudgetTypesPage() {
                   onChange={(e) =>
                     setForm({ ...form, category: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 >
                   {CATEGORIES.map((cat) => (
                     <option key={cat.value} value={cat.value}>
@@ -351,7 +351,7 @@ export default function BudgetTypesPage() {
                   onChange={(e) =>
                     setForm({ ...form, parentId: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 >
                   <option value="">-- ไม่มี (เป็นกลุ่มหลัก) --</option>
                   {parentTypes
@@ -372,7 +372,7 @@ export default function BudgetTypesPage() {
                   onChange={(e) =>
                     setForm({ ...form, bankAccountId: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 >
                   <option value="">-- ไม่ระบุ --</option>
                   {bankAccounts.map((ba) => (

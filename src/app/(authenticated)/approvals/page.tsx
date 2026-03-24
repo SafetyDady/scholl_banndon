@@ -133,7 +133,7 @@ export default function ApprovalsPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono text-gray-900">
+                      <td className="px-4 py-3 text-right font-mono text-gray-900 font-financial">
                         {formatCurrency(item.totalAmount)}
                       </td>
                       <td className="px-4 py-3 text-gray-600">
@@ -152,7 +152,7 @@ export default function ApprovalsPage() {
                             disabled={actionLoading === item.id}
                             className={cn(
                               'inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors',
-                              'bg-[#16a34a] hover:bg-[#15803d] text-white',
+                              'bg-success hover:bg-success/80 text-white',
                               'disabled:opacity-50 disabled:cursor-not-allowed'
                             )}
                           >
@@ -212,7 +212,7 @@ export default function ApprovalsPage() {
               onChange={(e) => setRejectComment(e.target.value)}
               rows={3}
               placeholder="ระบุเหตุผล..."
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f] resize-none"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary resize-none"
               autoFocus
             />
             <div className="flex items-center justify-end gap-3 mt-4">

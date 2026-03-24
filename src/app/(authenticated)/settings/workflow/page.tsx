@@ -71,7 +71,7 @@ export default function WorkflowSettingsPage() {
       <div className="bg-white rounded-xl shadow-sm border p-6 max-w-2xl">
         {/* Approval Mode */}
         <div className="mb-6">
-          <h3 className="text-sm font-semibold text-[#1e3a5f] mb-3">
+          <h3 className="text-sm font-semibold text-primary mb-3">
             โหมดการอนุมัติ
           </h3>
           <div className="space-y-3">
@@ -85,10 +85,10 @@ export default function WorkflowSettingsPage() {
                   setApprovalMode('self')
                   setApprovalSteps('')
                 }}
-                className="mt-1 h-4 w-4 text-[#1e3a5f] border-gray-300 focus:ring-[#1e3a5f]"
+                className="mt-1 h-4 w-4 text-primary border-gray-300 focus:ring-primary"
               />
               <div>
-                <span className="text-sm font-medium text-gray-900 group-hover:text-[#1e3a5f]">
+                <span className="text-sm font-medium text-gray-900 group-hover:text-primary">
                   ครูการเงินดำเนินการเอง (ไม่ต้องอนุมัติ)
                 </span>
                 <p className="text-xs text-gray-500 mt-0.5">
@@ -103,10 +103,10 @@ export default function WorkflowSettingsPage() {
                 value="approval"
                 checked={approvalMode === 'approval'}
                 onChange={() => setApprovalMode('approval')}
-                className="mt-1 h-4 w-4 text-[#1e3a5f] border-gray-300 focus:ring-[#1e3a5f]"
+                className="mt-1 h-4 w-4 text-primary border-gray-300 focus:ring-primary"
               />
               <div>
-                <span className="text-sm font-medium text-gray-900 group-hover:text-[#1e3a5f]">
+                <span className="text-sm font-medium text-gray-900 group-hover:text-primary">
                   ต้องผ่านการอนุมัติจากผู้บริหาร
                 </span>
                 <p className="text-xs text-gray-500 mt-0.5">
@@ -131,9 +131,9 @@ export default function WorkflowSettingsPage() {
                   value="vice_principal"
                   checked={approvalSteps === 'vice_principal'}
                   onChange={() => setApprovalSteps('vice_principal')}
-                  className="h-4 w-4 text-[#1e3a5f] border-gray-300 focus:ring-[#1e3a5f]"
+                  className="h-4 w-4 text-primary border-gray-300 focus:ring-primary"
                 />
-                <span className="text-sm text-gray-700 group-hover:text-[#1e3a5f]">
+                <span className="text-sm text-gray-700 group-hover:text-primary">
                   รอง ผอ. เห็นชอบ
                 </span>
               </label>
@@ -144,9 +144,9 @@ export default function WorkflowSettingsPage() {
                   value="principal"
                   checked={approvalSteps === 'principal'}
                   onChange={() => setApprovalSteps('principal')}
-                  className="h-4 w-4 text-[#1e3a5f] border-gray-300 focus:ring-[#1e3a5f]"
+                  className="h-4 w-4 text-primary border-gray-300 focus:ring-primary"
                 />
-                <span className="text-sm text-gray-700 group-hover:text-[#1e3a5f]">
+                <span className="text-sm text-gray-700 group-hover:text-primary">
                   ผอ. อนุมัติ
                 </span>
               </label>
@@ -157,9 +157,9 @@ export default function WorkflowSettingsPage() {
                   value="both"
                   checked={approvalSteps === 'both'}
                   onChange={() => setApprovalSteps('both')}
-                  className="h-4 w-4 text-[#1e3a5f] border-gray-300 focus:ring-[#1e3a5f]"
+                  className="h-4 w-4 text-primary border-gray-300 focus:ring-primary"
                 />
-                <span className="text-sm text-gray-700 group-hover:text-[#1e3a5f]">
+                <span className="text-sm text-gray-700 group-hover:text-primary">
                   ทั้ง รอง ผอ. + ผอ. (2 ขั้น)
                 </span>
               </label>

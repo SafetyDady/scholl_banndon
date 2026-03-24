@@ -68,7 +68,7 @@ export default function DisbursementsPage() {
             href="/disbursements/new"
             className={cn(
               'inline-flex items-center gap-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-colors',
-              'bg-[#1e3a5f] hover:bg-[#163050] text-white'
+              'bg-primary hover:bg-primary/80 text-white'
             )}
           >
             <Plus size={16} />
@@ -90,7 +90,7 @@ export default function DisbursementsPage() {
                 setStatus(e.target.value)
                 setPage(1)
               }}
-              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
             >
               <option value="">ทั้งหมด</option>
               {statusOptions.map((s) => (
@@ -114,7 +114,7 @@ export default function DisbursementsPage() {
                   setPage(1)
                 }}
                 placeholder="ค้นหารายการ, บันทึกฉบับที่, ผู้รับจ้าง..."
-                className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]"
+                className="w-full border border-gray-300 rounded-lg pl-9 pr-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary"
               />
             </div>
           </div>
@@ -170,7 +170,7 @@ export default function DisbursementsPage() {
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono text-gray-900">
+                      <td className="px-4 py-3 text-right font-mono text-gray-900 font-financial">
                         {formatCurrency(item.totalAmount)}
                       </td>
                       <td className="px-4 py-3 text-center">

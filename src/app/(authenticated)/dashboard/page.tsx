@@ -104,25 +104,25 @@ export default function DashboardPage() {
       title: 'ยอดเบิกจ่ายทั้งหมด',
       value: `${formatCurrency(data?.totalDisbursed ?? 0)} บาท`,
       icon: <Banknote size={24} className="text-white" />,
-      bgColor: 'bg-[#1e3a5f]',
+      bgColor: 'bg-primary',
     },
     {
       title: 'จำนวนรายการ',
       value: (data?.totalTransactions ?? 0).toLocaleString(),
       icon: <FileText size={24} className="text-white" />,
-      bgColor: 'bg-[#3b82f6]',
+      bgColor: 'bg-info',
     },
     {
       title: 'รอดำเนินการ',
       value: (data?.pendingCount ?? 0).toLocaleString(),
       icon: <Clock size={24} className="text-white" />,
-      bgColor: 'bg-[#f59e0b]',
+      bgColor: 'bg-warning',
     },
     {
       title: 'ภาษีหัก ณ ที่จ่าย',
       value: `${formatCurrency(data?.totalTaxWithheld ?? 0)} บาท`,
       icon: <Receipt size={24} className="text-white" />,
-      bgColor: 'bg-[#16a34a]',
+      bgColor: 'bg-success',
     },
   ]
 
@@ -160,7 +160,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Pie Chart */}
         <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="text-base font-semibold text-[#1e3a5f] mb-4">
+          <h2 className="text-base font-semibold text-primary mb-4">
             สัดส่วนตามประเภทเงิน
           </h2>
           {data?.byBudgetType && data.byBudgetType.length > 0 ? (
@@ -199,7 +199,7 @@ export default function DashboardPage() {
 
         {/* Bar Chart */}
         <div className="bg-white rounded-xl shadow-sm border p-6">
-          <h2 className="text-base font-semibold text-[#1e3a5f] mb-4">
+          <h2 className="text-base font-semibold text-primary mb-4">
             ยอดเบิกจ่ายรายเดือน
           </h2>
           {monthlyData.length > 0 ? (
@@ -236,7 +236,7 @@ export default function DashboardPage() {
 
       {/* Recent Activity */}
       <div className="bg-white rounded-xl shadow-sm border p-6">
-        <h2 className="text-base font-semibold text-[#1e3a5f] mb-4">
+        <h2 className="text-base font-semibold text-primary mb-4">
           รายการล่าสุด
         </h2>
         {data?.recentItems && data.recentItems.length > 0 ? (
@@ -263,7 +263,7 @@ export default function DashboardPage() {
                     <td className="py-3 text-gray-600">
                       {item.budgetTypeName}
                     </td>
-                    <td className="py-3 text-right font-mono text-gray-900">
+                    <td className="py-3 text-right font-mono text-gray-900 font-financial">
                       {formatCurrency(item.totalAmount)}
                     </td>
                     <td className="py-3 text-center">

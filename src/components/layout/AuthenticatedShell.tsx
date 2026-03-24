@@ -35,7 +35,7 @@ export default function AuthenticatedShell({
   }
 
   return (
-    <div className="min-h-screen bg-[#f8fafc]">
+    <div className="min-h-screen bg-background">
       <Header
         user={user}
         onMenuToggle={() => setMobileMenuOpen((prev) => !prev)}

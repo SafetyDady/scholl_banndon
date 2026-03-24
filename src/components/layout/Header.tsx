@@ -39,11 +39,11 @@ export default function Header({ user, onMenuToggle }: HeaderProps) {
 
       {/* School name */}
       <div className="hidden shrink-0 items-center gap-2.5 px-5 lg:flex">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#1e3a5f]">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
           <GraduationCap className="h-4 w-4 text-white" />
         </div>
         <div>
-          <span className="text-sm font-semibold text-[#1e3a5f]">
+          <span className="text-sm font-semibold text-primary">
             ร.ร.วัดบ้านดอน
           </span>
           <span className="ml-2 text-xs text-gray-400">ระบบบริหารการเงิน</span>
@@ -52,7 +52,7 @@ export default function Header({ user, onMenuToggle }: HeaderProps) {
 
       {/* Mobile: center title */}
       <div className="flex flex-1 items-center justify-center lg:hidden">
-        <span className="text-sm font-medium text-[#1e3a5f]">
+        <span className="text-sm font-medium text-primary">
           ร.ร.วัดบ้านดอน
         </span>
       </div>
@@ -62,7 +62,7 @@ export default function Header({ user, onMenuToggle }: HeaderProps) {
 
       {/* Right: avatar + user info + logout */}
       <div className="flex items-center gap-3 pr-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#1e3a5f] text-xs font-semibold text-white">
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-xs font-semibold text-white">
           {initials}
         </div>
 

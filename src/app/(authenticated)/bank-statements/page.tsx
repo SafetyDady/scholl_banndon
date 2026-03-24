@@ -104,17 +104,17 @@ const MATCH_BADGE: Record<string, { label: string; icon: typeof CheckCircle; cla
   MATCHED: {
     label: 'ผูกอัตโนมัติ',
     icon: CheckCircle,
-    className: 'bg-green-100 text-green-800',
+    className: 'bg-success/15 text-success',
   },
   MANUAL: {
     label: 'ผูกด้วยตนเอง',
     icon: Link,
-    className: 'bg-blue-100 text-blue-800',
+    className: 'bg-info/15 text-info',
   },
   UNMATCHED: {
     label: 'ยังไม่ผูก',
     icon: AlertCircle,
-    className: 'bg-amber-100 text-amber-800',
+    className: 'bg-warning/15 text-warning',
   },
 }
 
@@ -427,7 +427,7 @@ export default function BankStatementsPage() {
                 setShowForm(!showForm)
                 if (!showForm) setRows([newRow()])
               }}
-              className="bg-[#16a34a] text-white hover:bg-[#15803d]"
+              className="bg-success text-white hover:bg-success/80"
             >
               <Plus className="mr-1 h-4 w-4" />
               เพิ่มรายการ
@@ -438,14 +438,14 @@ export default function BankStatementsPage() {
 
       {/* Bank account selector */}
       <div className="rounded-lg border border-[#e2e8f0] bg-white p-4">
-        <label className="mb-2 block text-sm font-medium text-[#1e3a5f]">
+        <label className="mb-2 block text-sm font-medium text-primary">
           <BookOpen className="mr-1.5 inline h-4 w-4" />
           เลือกบัญชีธนาคาร
         </label>
         <select
           value={selectedAccountId}
           onChange={(e) => setSelectedAccountId(e.target.value)}
-          className="w-full rounded-md border border-[#e2e8f0] bg-white px-3 py-2 text-sm focus:border-[#1e3a5f] focus:outline-none focus:ring-1 focus:ring-[#1e3a5f] sm:w-96"
+          className="w-full rounded-md border border-[#e2e8f0] bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary sm:w-96"
         >
           <option value="">-- เลือกบัญชี --</option>
           {bankAccounts.map((ba) => (
@@ -459,19 +459,19 @@ export default function BankStatementsPage() {
       {/* Entry form */}
       {showForm && selectedAccountId && (
         <div className="rounded-lg border border-[#e2e8f0] bg-white p-4">
-          <h3 className="mb-3 text-sm font-semibold text-[#1e3a5f]">
+          <h3 className="mb-3 text-sm font-semibold text-primary">
             เพิ่มรายการจากสมุดบัญชี
           </h3>
 
           {rows.map((row) => (
             <div key={row.key} className="flex items-center gap-3 border-b border-[#e2e8f0] px-2 py-2">
               <div className="w-[140px] shrink-0">
-                <label className="mb-1 block text-xs font-medium text-[#1e3a5f]">วันที่</label>
+                <label className="mb-1 block text-xs font-medium text-primary">วันที่</label>
                 <input
                   type="date"
                   value={row.transactionDate}
                   onChange={(e) => updateRow(row.key, 'transactionDate', e.target.value)}
-                  className="w-full rounded border border-[#e2e8f0] px-2 py-1.5 text-sm focus:border-[#1e3a5f] focus:outline-none"
+                  className="w-full rounded border border-[#e2e8f0] px-2 py-1.5 text-sm focus:border-primary focus:outline-none"
                 />
               </div>
               <div className="w-[130px] shrink-0">
@@ -499,7 +499,7 @@ export default function BankStatementsPage() {
                 />
               </div>
               <div className="w-[140px] shrink-0">
-                <label className="mb-1 block text-xs font-medium text-[#1e3a5f]">คงเหลือ</label>
+                <label className="mb-1 block text-xs font-medium text-primary">คงเหลือ</label>
                 <input
                   type="text"
                   inputMode="decimal"
@@ -507,7 +507,7 @@ export default function BankStatementsPage() {
                   value={row.balance}
                   onChange={(e) => updateRow(row.key, 'balance', e.target.value)}
                   onBlur={() => handleBlur(row.key, 'balance')}
-                  className="w-full rounded border border-[#e2e8f0] px-2 py-1.5 text-right text-sm font-medium focus:border-[#1e3a5f] focus:outline-none"
+                  className="w-full rounded border border-[#e2e8f0] px-2 py-1.5 text-right text-sm font-medium focus:border-primary focus:outline-none"
                 />
               </div>
               <div className="min-w-0 flex-1">
@@ -517,7 +517,7 @@ export default function BankStatementsPage() {
                   placeholder="หมายเหตุ"
                   value={row.description}
                   onChange={(e) => updateRow(row.key, 'description', e.target.value)}
-                  className="w-full rounded border border-[#e2e8f0] px-2 py-1.5 text-sm focus:border-[#1e3a5f] focus:outline-none"
+                  className="w-full rounded border border-[#e2e8f0] px-2 py-1.5 text-sm focus:border-primary focus:outline-none"
                 />
               </div>
               <div className="shrink-0 pt-5">
@@ -536,7 +536,7 @@ export default function BankStatementsPage() {
             <Button
               variant="outline"
               onClick={addRow}
-              className="text-[#1e3a5f]"
+              className="text-primary"
             >
               <Plus className="mr-1 h-4 w-4" />
               เพิ่มบรรทัด
@@ -545,7 +545,7 @@ export default function BankStatementsPage() {
             <Button
               onClick={handleSave}
               disabled={saving}
-              className="bg-[#1e3a5f] text-white hover:bg-[#162d4a]"
+              className="bg-primary text-white hover:bg-primary/80"
             >
               {saving ? (
                 <Loader2 className="mr-1 h-4 w-4 animate-spin" />
@@ -569,7 +569,7 @@ export default function BankStatementsPage() {
       {selectedAccountId && (
         <div className="rounded-lg border border-[#e2e8f0] bg-white">
           <div className="border-b border-[#e2e8f0] px-4 py-3">
-            <h3 className="text-sm font-semibold text-[#1e3a5f]">
+            <h3 className="text-sm font-semibold text-primary">
               รายการในสมุดบัญชี
               {statements && (
                 <span className="ml-2 font-normal text-gray-500">
@@ -581,7 +581,7 @@ export default function BankStatementsPage() {
 
           {loading ? (
             <div className="flex items-center justify-center py-12">
-              <Loader2 className="h-6 w-6 animate-spin text-[#1e3a5f]" />
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
               <span className="ml-2 text-sm text-gray-500">กำลังโหลด...</span>
             </div>
           ) : !statements?.data?.length ? (
@@ -595,13 +595,13 @@ export default function BankStatementsPage() {
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="border-b border-[#e2e8f0] bg-[#f8fafc]">
-                      <th className="px-3 py-2.5 text-left font-medium text-[#1e3a5f]">วันที่</th>
-                      <th className="px-3 py-2.5 text-right font-medium text-[#1e3a5f]">ถอน</th>
-                      <th className="px-3 py-2.5 text-right font-medium text-[#1e3a5f]">ฝาก</th>
-                      <th className="px-3 py-2.5 text-right font-medium text-[#1e3a5f]">คงเหลือ</th>
-                      <th className="px-3 py-2.5 text-left font-medium text-[#1e3a5f]">หมายเหตุ</th>
-                      <th className="px-3 py-2.5 text-center font-medium text-[#1e3a5f]">สถานะ Match</th>
-                      <th className="px-3 py-2.5 text-left font-medium text-[#1e3a5f]">รายการที่ผูก</th>
+                      <th className="px-3 py-2.5 text-left font-medium text-primary">วันที่</th>
+                      <th className="px-3 py-2.5 text-right font-medium text-primary">ถอน</th>
+                      <th className="px-3 py-2.5 text-right font-medium text-primary">ฝาก</th>
+                      <th className="px-3 py-2.5 text-right font-medium text-primary">คงเหลือ</th>
+                      <th className="px-3 py-2.5 text-left font-medium text-primary">หมายเหตุ</th>
+                      <th className="px-3 py-2.5 text-center font-medium text-primary">สถานะ Match</th>
+                      <th className="px-3 py-2.5 text-left font-medium text-primary">รายการที่ผูก</th>
                       <th className="w-10 px-3 py-2.5" />
                     </tr>
                   </thead>
@@ -619,7 +619,7 @@ export default function BankStatementsPage() {
                           </td>
                           <td className="whitespace-nowrap px-3 py-2.5 text-right">
                             {s.withdrawal > 0 ? (
-                              <span className="text-red-600">
+                              <span className="text-red-600 font-financial">
                                 {formatCurrency(s.withdrawal)}
                               </span>
                             ) : (
@@ -628,14 +628,14 @@ export default function BankStatementsPage() {
                           </td>
                           <td className="whitespace-nowrap px-3 py-2.5 text-right">
                             {s.deposit > 0 ? (
-                              <span className="text-green-600">
+                              <span className="text-green-600 font-financial">
                                 {formatCurrency(s.deposit)}
                               </span>
                             ) : (
                               <span className="text-gray-300">-</span>
                             )}
                           </td>
-                          <td className="whitespace-nowrap px-3 py-2.5 text-right font-medium">
+                          <td className="whitespace-nowrap px-3 py-2.5 text-right font-medium font-financial">
                             {formatCurrency(s.balance)}
                           </td>
                           <td className="max-w-[200px] truncate px-3 py-2.5 text-gray-600">
@@ -654,10 +654,10 @@ export default function BankStatementsPage() {
                           </td>
                           <td className="px-3 py-2.5">
                             {s.approvalRequest ? (
-                              <span className="text-xs text-[#1e3a5f]">
+                              <span className="text-xs text-primary">
                                 {s.approvalRequest.memoNumber || `#${s.approvalRequest.id}`}
                                 <br />
-                                <span className="text-gray-400">
+                                <span className="text-gray-400 font-financial">
                                   {formatCurrency(s.approvalRequest.totalAmount)} บาท
                                 </span>
                               </span>
@@ -666,7 +666,7 @@ export default function BankStatementsPage() {
                                 variant="outline"
                                 size="xs"
                                 onClick={() => openMatchModal(s.id, 'withdrawal')}
-                                className="text-[#1e3a5f]"
+                                className="text-primary"
                               >
                                 <Link className="mr-1 h-3 w-3" />
                                 ผูกรายการ
@@ -676,7 +676,7 @@ export default function BankStatementsPage() {
                                 variant="outline"
                                 size="xs"
                                 onClick={() => openMatchModal(s.id, 'deposit')}
-                                className="text-[#1e3a5f]"
+                                className="text-primary"
                               >
                                 <Info className="mr-1 h-3 w-3" />
                                 ระบุที่มา
@@ -735,17 +735,17 @@ export default function BankStatementsPage() {
       {/* Summary section */}
       {selectedAccountId && statements?.data?.length ? (
         <div className="rounded-lg border border-[#e2e8f0] bg-white p-4">
-          <h3 className="mb-3 text-sm font-semibold text-[#1e3a5f]">สรุปยอด</h3>
+          <h3 className="mb-3 text-sm font-semibold text-primary">สรุปยอด</h3>
           <div className="grid gap-3 sm:grid-cols-3">
             <div className="rounded-md bg-[#f0f9ff] p-3">
               <p className="text-xs text-gray-500">ยอดคงเหลือล่าสุดตามสมุดบัญชี</p>
-              <p className="mt-1 text-lg font-semibold text-[#1e3a5f]">
+              <p className="mt-1 text-lg font-semibold text-primary font-financial">
                 {latestBalance !== null ? formatCurrency(latestBalance) : '-'} บาท
               </p>
             </div>
             <div className="rounded-md bg-[#f0fdf4] p-3">
               <p className="text-xs text-gray-500">ยอดคงเหลือในระบบ</p>
-              <p className="mt-1 text-lg font-semibold text-[#16a34a]">
+              <p className="mt-1 text-lg font-semibold text-success font-financial">
                 {systemBalance !== null ? formatCurrency(systemBalance) : '-'} บาท
               </p>
             </div>
@@ -758,7 +758,7 @@ export default function BankStatementsPage() {
               <p className="text-xs text-gray-500">ผลต่าง</p>
               <p
                 className={cn(
-                  'mt-1 flex items-center gap-1 text-lg font-semibold',
+                  'mt-1 flex items-center gap-1 text-lg font-semibold font-financial',
                   isBalanceMatched ? 'text-green-600' : 'text-red-600',
                 )}
               >
@@ -781,7 +781,7 @@ export default function BankStatementsPage() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <div className="mx-4 w-full max-w-lg rounded-lg bg-white shadow-xl">
             <div className="flex items-center justify-between border-b border-[#e2e8f0] px-4 py-3">
-              <h3 className="text-sm font-semibold text-[#1e3a5f]">
+              <h3 className="text-sm font-semibold text-primary">
                 {matchModal.type === 'withdrawal'
                   ? 'ผูกรายการเบิกจ่าย'
                   : 'ระบุที่มาเงินฝาก'}
@@ -797,7 +797,7 @@ export default function BankStatementsPage() {
             <div className="max-h-80 overflow-y-auto p-4">
               {loadingAR ? (
                 <div className="flex items-center justify-center py-8">
-                  <Loader2 className="h-5 w-5 animate-spin text-[#1e3a5f]" />
+                  <Loader2 className="h-5 w-5 animate-spin text-primary" />
                   <span className="ml-2 text-sm text-gray-500">กำลังโหลด...</span>
                 </div>
               ) : approvalRequests.length === 0 ? (
@@ -812,10 +812,10 @@ export default function BankStatementsPage() {
                       key={ar.id}
                       onClick={() => handleMatch(ar.id)}
                       disabled={matching}
-                      className="flex w-full items-center justify-between rounded-md border border-[#e2e8f0] px-3 py-2.5 text-left transition-colors hover:border-[#1e3a5f] hover:bg-[#f0f9ff]"
+                      className="flex w-full items-center justify-between rounded-md border border-[#e2e8f0] px-3 py-2.5 text-left transition-colors hover:border-primary hover:bg-[#f0f9ff]"
                     >
                       <div>
-                        <p className="text-sm font-medium text-[#1e3a5f]">
+                        <p className="text-sm font-medium text-primary">
                           {ar.memoNumber || `รายการ #${ar.id}`}
                         </p>
                         <p className="text-xs text-gray-500">
@@ -823,7 +823,7 @@ export default function BankStatementsPage() {
                         </p>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-semibold text-[#1e3a5f]">
+                        <p className="text-sm font-semibold text-primary font-financial">
                           {formatCurrency(ar.totalAmount)} บาท
                         </p>
                         <p className="text-xs text-gray-400">{ar.status}</p>

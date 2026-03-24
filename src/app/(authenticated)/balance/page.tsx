@@ -102,7 +102,7 @@ export default function BalanceChangesPage() {
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-[#1e3a5f]" />
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
             <span className="ml-2 text-sm text-gray-500">กำลังโหลด...</span>
           </div>
         ) : !data?.dates?.length ? (
@@ -116,7 +116,7 @@ export default function BalanceChangesPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-[#1e3a5f] text-white">
+                <tr className="bg-primary text-white">
                   <th className="px-4 py-3 text-left text-xs uppercase tracking-wider font-medium w-[120px]">
                     วันที่
                   </th>
@@ -138,7 +138,7 @@ export default function BalanceChangesPage() {
                     className="border-b border-[#e2e8f0] hover:bg-[#f8fafc] transition-colors align-top"
                   >
                     {/* Date */}
-                    <td className="px-4 py-3 whitespace-nowrap font-medium text-[#1e3a5f]">
+                    <td className="px-4 py-3 whitespace-nowrap font-medium text-primary">
                       {formatShortDate(entry.date)}
                     </td>
 
@@ -149,7 +149,7 @@ export default function BalanceChangesPage() {
                           if (m.withdrawal > 0) {
                             return (
                               <div key={m.id} className="flex items-baseline gap-2">
-                                <span className="text-red-600 font-mono text-sm font-medium">
+                                <span className="text-red-600 font-mono text-sm font-medium font-financial">
                                   -{formatCurrency(m.withdrawal)}
                                 </span>
                                 <span className="text-gray-500 text-xs">
@@ -161,7 +161,7 @@ export default function BalanceChangesPage() {
                           if (m.deposit > 0) {
                             return (
                               <div key={m.id} className="flex items-baseline gap-2">
-                                <span className="text-[#16a34a] font-mono text-sm font-medium">
+                                <span className="text-success font-mono text-sm font-medium font-financial">
                                   +{formatCurrency(m.deposit)}
                                 </span>
                                 <span className="text-gray-500 text-xs">
@@ -178,12 +178,12 @@ export default function BalanceChangesPage() {
                     {/* Status */}
                     <td className="px-4 py-3 text-center">
                       {entry.isIssued ? (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-800">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2.5 py-1 text-xs font-medium text-success">
                           <CheckCircle2 className="h-3.5 w-3.5" />
                           ออกแล้ว
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">
+                        <span className="inline-flex items-center gap-1 rounded-full bg-warning/15 px-2.5 py-1 text-xs font-medium text-warning">
                           <AlertTriangle className="h-3.5 w-3.5" />
                           ยังไม่ออก
                         </span>
@@ -197,7 +197,7 @@ export default function BalanceChangesPage() {
                           href={`/api/balance/issue/${entry.date}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#1e3a5f] hover:text-[#162d4a] hover:underline"
+                          className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 hover:underline"
                         >
                           <Download className="h-3.5 w-3.5" />
                           ดาวน์โหลด
@@ -206,7 +206,7 @@ export default function BalanceChangesPage() {
                         <Button
                           onClick={() => handleIssue(entry.date)}
                           disabled={issuingDate === entry.date}
-                          className="bg-[#1e3a5f] text-white hover:bg-[#162d4a] text-xs"
+                          className="bg-primary text-white hover:bg-primary/80 text-xs"
                           size="sm"
                         >
                           {issuingDate === entry.date ? (

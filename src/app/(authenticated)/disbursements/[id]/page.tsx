@@ -50,7 +50,7 @@ const ACTION_LABELS: Record<string, string> = {
 function WorkflowHistory({ actions }: { actions: WorkflowActionInfo[] }) {
   return (
     <div className="bg-white rounded-xl shadow-sm border p-6">
-      <h2 className="text-lg font-semibold text-[#1e3a5f] mb-4">
+      <h2 className="text-lg font-semibold text-primary mb-4">
         ประวัติการดำเนินงาน
       </h2>
       {actions.length === 0 ? (
@@ -65,7 +65,7 @@ function WorkflowHistory({ actions }: { actions: WorkflowActionInfo[] }) {
               key={action.id}
               className="flex items-start gap-3 p-3 rounded-lg bg-gray-50"
             >
-              <div className="w-8 h-8 rounded-full bg-[#1e3a5f]/10 text-[#1e3a5f] flex items-center justify-center shrink-0 mt-0.5">
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center shrink-0 mt-0.5">
                 <Clock size={16} />
               </div>
               <div className="flex-1 min-w-0">
@@ -144,7 +144,7 @@ function ContractorSearchInput({
           }}
           onFocus={() => setOpen(true)}
           placeholder="ค้นหาผู้รับจ้าง"
-          className="w-full rounded border border-gray-300 pl-7 pr-7 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+          className="w-full rounded border border-gray-300 pl-7 pr-7 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
         />
         <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
       </div>
@@ -155,7 +155,7 @@ function ContractorSearchInput({
               <button
                 key={c.id}
                 type="button"
-                className="w-full text-left px-3 py-2 text-sm hover:bg-[#1e3a5f]/5 transition-colors flex items-center justify-between"
+                className="w-full text-left px-3 py-2 text-sm hover:bg-primary/5 transition-colors flex items-center justify-between"
                 onMouseDown={(e) => e.preventDefault()}
                 onClick={() => {
                   setQuery(c.name)
@@ -177,7 +177,7 @@ function ContractorSearchInput({
           {query.trim() && !exactMatch && (
             <button
               type="button"
-              className="w-full text-left px-3 py-2 text-sm hover:bg-[#16a34a]/5 transition-colors border-t flex items-center gap-1.5 text-[#16a34a] font-medium"
+              className="w-full text-left px-3 py-2 text-sm hover:bg-success/5 transition-colors border-t flex items-center gap-1.5 text-success font-medium"
               onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 onQuickAdd(query.trim())
@@ -485,7 +485,7 @@ export default function DisbursementDetailPage() {
         <p className="mt-3 text-gray-500 text-lg">{error || 'ไม่พบรายการ'}</p>
         <Link
           href="/disbursements"
-          className="mt-4 inline-flex items-center gap-2 text-[#1e3a5f] hover:underline text-sm"
+          className="mt-4 inline-flex items-center gap-2 text-primary hover:underline text-sm"
         >
           <ArrowLeft size={16} />
           กลับไปยังรายการเบิกจ่าย
@@ -507,7 +507,7 @@ export default function DisbursementDetailPage() {
               <>
                 <Link
                   href={`/disbursements/${data.id}/edit`}
-                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-[#1e3a5f] text-[#1e3a5f] hover:bg-[#1e3a5f]/5 rounded-lg transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-primary text-primary hover:bg-primary/5 rounded-lg transition-colors"
                 >
                   <Pencil size={16} />
                   แก้ไข
@@ -556,7 +556,7 @@ export default function DisbursementDetailPage() {
           </div>
           <div>
             <dt className="text-sm text-gray-500">ยอดรวม</dt>
-            <dd className="text-lg font-bold font-mono text-[#1e3a5f] mt-0.5">
+            <dd className="text-lg font-bold font-mono text-primary mt-0.5 font-financial">
               {formatCurrency(data.totalAmount)} บาท
             </dd>
           </div>
@@ -571,7 +571,7 @@ export default function DisbursementDetailPage() {
 
       {/* Workflow Tracker */}
       <div className="bg-white rounded-xl shadow-sm border p-6">
-        <h2 className="text-lg font-semibold text-[#1e3a5f] mb-4">ขั้นตอนการดำเนินงาน</h2>
+        <h2 className="text-lg font-semibold text-primary mb-4">ขั้นตอนการดำเนินงาน</h2>
         <WorkflowTracker
           currentStep={data.currentStep}
           status={data.status}
@@ -597,7 +597,7 @@ export default function DisbursementDetailPage() {
                   disabled={actionLoading}
                   className={cn(
                     'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
-                    'bg-[#1e3a5f] hover:bg-[#163050] text-white',
+                    'bg-primary hover:bg-primary/80 text-white',
                     'disabled:opacity-50 disabled:cursor-not-allowed'
                   )}
                 >
@@ -613,7 +613,7 @@ export default function DisbursementDetailPage() {
                     disabled={actionLoading}
                     className={cn(
                       'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
-                      'bg-[#16a34a] hover:bg-[#15803d] text-white',
+                      'bg-success hover:bg-success/80 text-white',
                       'disabled:opacity-50 disabled:cursor-not-allowed'
                     )}
                   >
@@ -640,7 +640,7 @@ export default function DisbursementDetailPage() {
                   disabled={actionLoading}
                   className={cn(
                     'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
-                    'bg-[#1e3a5f] hover:bg-[#163050] text-white',
+                    'bg-primary hover:bg-primary/80 text-white',
                     'disabled:opacity-50 disabled:cursor-not-allowed'
                   )}
                 >
@@ -654,7 +654,7 @@ export default function DisbursementDetailPage() {
                   onClick={initPaymentForm}
                   className={cn(
                     'inline-flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-lg transition-colors',
-                    'bg-[#16a34a] hover:bg-[#15803d] text-white'
+                    'bg-success hover:bg-success/80 text-white'
                   )}
                 >
                   <CreditCard size={16} />
@@ -819,8 +819,8 @@ export default function DisbursementDetailPage() {
       {/* Payment Form (Step 4) */}
       {showPaymentForm && data.currentStep === 4 && (
         <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-          <div className="p-6 bg-[#16a34a]/5 border-b">
-            <h2 className="text-lg font-semibold text-[#16a34a] flex items-center gap-2">
+          <div className="p-6 bg-success/5 border-b">
+            <h2 className="text-lg font-semibold text-success flex items-center gap-2">
               <CreditCard size={20} />
               บันทึกการจ่ายเงินผู้รับจ้าง
             </h2>
@@ -849,7 +849,7 @@ export default function DisbursementDetailPage() {
                         {/* Item description + total */}
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-gray-900 font-medium">{entry.description}</span>
-                          <span className="text-sm text-gray-500">ยอดเบิก: <span className="font-mono font-semibold text-gray-900">{formatCurrency(entry.totalAmount)}</span> บาท</span>
+                          <span className="text-sm text-gray-500">ยอดเบิก: <span className="font-mono font-semibold text-gray-900 font-financial">{formatCurrency(entry.totalAmount)}</span> บาท</span>
                         </div>
 
                         {/* Payees */}
@@ -864,7 +864,7 @@ export default function DisbursementDetailPage() {
                                     type="date"
                                     value={payee.paymentDate}
                                     onChange={(e) => updatePayee(idx, pIdx, 'paymentDate', e.target.value)}
-                                    className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                                    className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                                   />
                                 </div>
                                 <div className="flex-1 min-w-0">
@@ -900,7 +900,7 @@ export default function DisbursementDetailPage() {
                                     placeholder="0.00"
                                     min="0"
                                     step="0.01"
-                                    className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm text-right font-mono focus:outline-none focus:ring-1 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                                    className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm text-right font-mono focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                                   />
                                 </div>
                                 <div className="w-20">
@@ -912,18 +912,18 @@ export default function DisbursementDetailPage() {
                                     placeholder="0"
                                     min="0"
                                     step="0.5"
-                                    className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm text-right font-mono focus:outline-none focus:ring-1 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                                    className="w-full rounded border border-gray-300 px-2 py-1.5 text-sm text-right font-mono focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
                                   />
                                 </div>
                                 <div className="w-28 text-right">
                                   <label className="text-xs text-gray-500">ยอดหัก</label>
-                                  <div className="font-mono text-sm text-red-600 py-1.5">
+                                  <div className="font-mono text-sm text-red-600 py-1.5 font-financial">
                                     {payee.taxWithheld > 0 ? formatCurrency(payee.taxWithheld) : '-'}
                                   </div>
                                 </div>
                                 <div className="w-32 text-right">
                                   <label className="text-xs text-gray-500">ยอดจ่ายจริง</label>
-                                  <div className="font-mono text-sm font-semibold text-[#1e3a5f] py-1.5">
+                                  <div className="font-mono text-sm font-semibold text-primary py-1.5 font-financial">
                                     {formatCurrency(payee.netAmount)}
                                   </div>
                                 </div>
@@ -936,7 +936,7 @@ export default function DisbursementDetailPage() {
                         <div className="flex items-center justify-between mt-2 ml-4">
                           <button
                             onClick={() => addPayee(idx)}
-                            className="inline-flex items-center gap-1 text-xs text-[#16a34a] hover:text-[#15803d] font-medium"
+                            className="inline-flex items-center gap-1 text-xs text-success hover:text-success/80 font-medium"
                           >
                             <Plus size={12} />
                             เพิ่มผู้รับจ้าง
@@ -962,13 +962,13 @@ export default function DisbursementDetailPage() {
               <tfoot>
                 <tr className="bg-gray-50">
                   <td colSpan={2} className="px-4 py-2.5 text-right text-sm font-medium text-gray-600">รวมทั้งหมด</td>
-                  <td className="px-4 py-2.5 text-right font-mono font-semibold">
+                  <td className="px-4 py-2.5 text-right font-mono font-semibold font-financial">
                     {formatCurrency(paymentEntries.reduce((s, e) => s + e.totalAmount, 0))}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600">
+                  <td className="px-4 py-2.5 text-right font-mono font-semibold text-red-600 font-financial">
                     {formatCurrency(paymentEntries.reduce((s, e) => s + e.payees.reduce((ps, p) => ps + p.taxWithheld, 0), 0))}
                   </td>
-                  <td className="px-4 py-2.5 text-right font-mono font-bold text-[#1e3a5f]">
+                  <td className="px-4 py-2.5 text-right font-mono font-bold text-primary font-financial">
                     {formatCurrency(paymentEntries.reduce((s, e) => s + e.payees.reduce((ps, p) => ps + p.netAmount, 0), 0))}
                   </td>
                 </tr>
@@ -988,7 +988,7 @@ export default function DisbursementDetailPage() {
               disabled={actionLoading}
               className={cn(
                 'px-6 py-2 text-sm font-medium rounded-lg transition-colors',
-                'bg-[#16a34a] hover:bg-[#15803d] text-white',
+                'bg-success hover:bg-success/80 text-white',
                 'disabled:opacity-50 disabled:cursor-not-allowed'
               )}
             >
@@ -1001,7 +1001,7 @@ export default function DisbursementDetailPage() {
       {/* Disbursement Groups Detail */}
       <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
         <div className="p-6 pb-0">
-          <h2 className="text-lg font-semibold text-[#1e3a5f] mb-4">
+          <h2 className="text-lg font-semibold text-primary mb-4">
             รายละเอียดรายการ
           </h2>
         </div>
@@ -1009,9 +1009,9 @@ export default function DisbursementDetailPage() {
         {data.disbursementGroups.map((group) => (
           <div key={group.id} className="border-t">
             {/* Group Header */}
-            <div className="flex items-center justify-between px-6 py-3 bg-[#1e3a5f]/5">
+            <div className="flex items-center justify-between px-6 py-3 bg-primary/5">
               <div>
-                <span className="text-sm font-semibold text-[#1e3a5f]">
+                <span className="text-sm font-semibold text-primary">
                   {group.budgetType.name}
                 </span>
                 {group.budgetType.bankAccount && (
@@ -1038,7 +1038,7 @@ export default function DisbursementDetailPage() {
                       <tr className="border-b">
                         <td className="px-4 py-2.5 text-gray-500 text-center">{idx + 1}</td>
                         <td className="px-4 py-2.5 text-gray-900">{item.description}</td>
-                        <td className="px-4 py-2.5 text-right font-mono text-gray-900">
+                        <td className="px-4 py-2.5 text-right font-mono text-gray-900 font-financial">
                           {formatCurrency(item.amount)}
                         </td>
                       </tr>
@@ -1088,7 +1088,7 @@ export default function DisbursementDetailPage() {
                     <td colSpan={2} className="px-4 py-2.5 text-right text-sm font-medium text-gray-600">
                       รวมเงิน
                     </td>
-                    <td className="px-4 py-2.5 text-right font-mono font-semibold text-[#1e3a5f]">
+                    <td className="px-4 py-2.5 text-right font-mono font-semibold text-primary font-financial">
                       {formatCurrency(group.subtotal)}
                     </td>
                   </tr>
@@ -1099,10 +1099,10 @@ export default function DisbursementDetailPage() {
         ))}
 
         {/* Grand Total */}
-        <div className="px-6 py-4 bg-[#1e3a5f]/5 border-t">
+        <div className="px-6 py-4 bg-primary/5 border-t">
           <div className="flex items-center justify-end gap-4">
             <span className="text-base font-medium text-gray-700">ยอดรวมทั้งสิ้น</span>
-            <span className="text-xl font-bold font-mono text-[#1e3a5f]">
+            <span className="text-xl font-bold font-mono text-primary font-financial">
               {formatCurrency(data.totalAmount)} บาท
             </span>
           </div>

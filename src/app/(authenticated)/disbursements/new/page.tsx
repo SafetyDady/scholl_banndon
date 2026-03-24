@@ -213,7 +213,7 @@ export default function NewDisbursementPage() {
   }
 
   const inputClass =
-    'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#1e3a5f]/20 focus:border-[#1e3a5f]'
+    'w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary'
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
@@ -279,8 +279,8 @@ export default function NewDisbursementPage() {
               className="bg-white rounded-xl shadow-sm border overflow-hidden"
             >
               {/* Group Header */}
-              <div className="flex items-center justify-between p-4 bg-[#1e3a5f]/5 border-b">
-                <h3 className="text-sm font-semibold text-[#1e3a5f]">
+              <div className="flex items-center justify-between p-4 bg-primary/5 border-b">
+                <h3 className="text-sm font-semibold text-primary">
                   กลุ่มที่ {gIndex + 1}
                 </h3>
                 {groups.length > 1 && (
@@ -370,7 +370,7 @@ export default function NewDisbursementPage() {
                                 )
                               }
                               placeholder="รายละเอียดรายการ"
-                              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:ring-1 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm focus:ring-1 focus:ring-primary/30 focus:border-primary"
                             />
                           </td>
                           <td className="px-3 py-2">
@@ -388,7 +388,7 @@ export default function NewDisbursementPage() {
                               min="0"
                               step="0.01"
                               placeholder="0.00"
-                              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm text-right font-mono focus:ring-1 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                              className="w-full border border-gray-300 rounded px-2 py-1.5 text-sm text-right font-mono focus:ring-1 focus:ring-primary/30 focus:border-primary"
                             />
                           </td>
                           <td className="px-3 py-2 text-center">
@@ -414,14 +414,14 @@ export default function NewDisbursementPage() {
                   <button
                     type="button"
                     onClick={() => addItem(group.key)}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-[#1e3a5f] hover:bg-[#1e3a5f]/5 border border-[#1e3a5f]/20 rounded-lg transition-colors"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/5 border border-primary/20 rounded-lg transition-colors"
                   >
                     <Plus size={14} />
                     เพิ่มรายการ
                   </button>
                   <div className="text-sm">
                     <span className="text-gray-500">รวมเงิน: </span>
-                    <span className="font-semibold font-mono text-[#1e3a5f]">
+                    <span className="font-semibold font-mono text-primary font-financial">
                       {formatCurrency(subtotal)} บาท
                     </span>
                   </div>
@@ -435,7 +435,7 @@ export default function NewDisbursementPage() {
         <button
           type="button"
           onClick={addGroup}
-          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-[#1e3a5f] hover:bg-[#1e3a5f]/5 border-2 border-dashed border-[#1e3a5f]/20 rounded-xl transition-colors"
+          className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium text-primary hover:bg-primary/5 border-2 border-dashed border-primary/20 rounded-xl transition-colors"
         >
           <Plus size={16} />
           เพิ่มประเภทเงิน
@@ -446,7 +446,7 @@ export default function NewDisbursementPage() {
           <div className="flex items-center justify-between">
             <div className="text-base">
               <span className="text-gray-600 font-medium">รวมจำนวนเงินที่ขอเบิกทั้งสิ้น: </span>
-              <span className="text-xl font-bold font-mono text-[#1e3a5f]">
+              <span className="text-xl font-bold font-mono text-primary font-financial">
                 {formatCurrency(grandTotal)} บาท
               </span>
             </div>
@@ -462,7 +462,7 @@ export default function NewDisbursementPage() {
                 disabled={submitting}
                 className={cn(
                   'inline-flex items-center gap-2 px-6 py-2.5 text-sm font-medium rounded-lg transition-colors',
-                  'bg-[#1e3a5f] hover:bg-[#163050] text-white',
+                  'bg-primary hover:bg-primary/80 text-white',
                   'disabled:opacity-50 disabled:cursor-not-allowed'
                 )}
               >

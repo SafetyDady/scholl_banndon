@@ -16,12 +16,13 @@ export const WORKFLOW_STEPS = [
 ] as const
 
 export const STATUS_LABELS: Record<string, { label: string; color: string }> = {
-  DRAFT: { label: 'ร่าง', color: 'bg-gray-100 text-gray-800' },
-  PENDING_APPROVAL: { label: 'รออนุมัติ', color: 'bg-yellow-100 text-yellow-800' },
-  APPROVED: { label: 'อนุมัติแล้ว', color: 'bg-blue-100 text-blue-800' },
-  WITHDRAWN: { label: 'เบิกเงินแล้ว', color: 'bg-indigo-100 text-indigo-800' },
-  COMPLETED: { label: 'เสร็จสิ้น', color: 'bg-green-100 text-green-800' },
-  REJECTED: { label: 'ไม่อนุมัติ', color: 'bg-red-100 text-red-800' },
+  DRAFT: { label: 'ร่าง', color: 'muted' },
+  PENDING_APPROVAL: { label: 'รออนุมัติ', color: 'warning' },
+  APPROVED: { label: 'อนุมัติแล้ว', color: 'info' },
+  WITHDRAWN: { label: 'เบิกเงินแล้ว', color: 'info' },
+  PAID: { label: 'จ่ายเงินแล้ว', color: 'success' },
+  COMPLETED: { label: 'เสร็จสิ้น', color: 'success' },
+  REJECTED: { label: 'ไม่อนุมัติ', color: 'destructive' },
 }
 
 export const BUDGET_TYPES = [

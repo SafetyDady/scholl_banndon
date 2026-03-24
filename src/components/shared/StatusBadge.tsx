@@ -1,35 +1,46 @@
+/*
+ * StatusBadge — Inline status chip with semantic colors
+ * Uses CSS variables from globals.css — no hardcoded colors
+ */
 import { cn } from '@/lib/utils'
 import { STATUS_LABELS } from '@/lib/constants'
 
+const COLOR_MAP: Record<string, string> = {
+  muted: 'bg-muted text-muted-foreground',
+  warning: 'bg-warning/15 text-warning',
+  info: 'bg-info/15 text-info',
+  success: 'bg-success/15 text-success',
+  destructive: 'bg-destructive/15 text-destructive',
+}
+
 interface StatusBadgeProps {
   status: string
+  className?: string
 }
 
-const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
-  DRAFT:            { bg: 'bg-gray-100',    text: 'text-gray-700' },
-  PENDING_APPROVAL: { bg: 'bg-amber-50',    text: 'text-amber-700' },
-  APPROVED:         { bg: 'bg-blue-50',     text: 'text-blue-700' },
-  WITHDRAWN:        { bg: 'bg-indigo-50',   text: 'text-indigo-700' },
-  PAID:             { bg: 'bg-purple-50',   text: 'text-purple-700' },
-  TAX_ISSUED:       { bg: 'bg-pink-50',     text: 'text-pink-700' },
-  BALANCE_REPORTED: { bg: 'bg-teal-50',     text: 'text-teal-700' },
-  COMPLETED:        { bg: 'bg-green-50',    text: 'text-green-700' },
-  REJECTED:         { bg: 'bg-red-50',      text: 'text-red-700' },
-}
-
-export function StatusBadge({ status }: StatusBadgeProps) {
-  const label = STATUS_LABELS[status]?.label ?? status
-  const colors = STATUS_COLORS[status] ?? { bg: 'bg-gray-100', text: 'text-gray-700' }
+export function StatusBadge({ status, className }: StatusBadgeProps) {
+  const config = STATUS_LABELS[status] || { label: status, color: 'muted' }
+  const colorClass = COLOR_MAP[config.color] || COLOR_MAP.muted
 
   return (
     <span
       className={cn(
-        'inline-flex items-center rounded-md px-2.5 py-0.5 text-xs font-semibold',
-        colors.bg,
-        colors.text
+        'inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium',
+        colorClass,
+        className
       )}
     >
-      {label}
+      <span
+        className={cn(
+          'w-1.5 h-1.5 rounded-full',
+          config.color === 'muted' && 'bg-muted-foreground/50',
+          config.color === 'warning' && 'bg-warning',
+          config.color === 'info' && 'bg-info',
+          config.color === 'success' && 'bg-success',
+          config.color === 'destructive' && 'bg-destructive',
+        )}
+      />
+      {config.label}
     </span>
   )
 }

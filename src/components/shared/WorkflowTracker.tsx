@@ -41,8 +41,8 @@ export function WorkflowTracker({ currentStep, status, workflowActions = [] }: W
                   className={cn(
                     'relative flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold transition-all',
                     isSkipped && 'bg-gray-200 text-gray-400',
-                    isCompleted && 'bg-[#16a34a] text-white',
-                    isCurrent && !isRejected && 'bg-[#1e3a5f] text-white',
+                    isCompleted && 'bg-success text-white',
+                    isCurrent && !isRejected && 'bg-primary text-white',
                     showRejected && 'bg-red-500 text-white',
                     isFuture && 'bg-gray-200 text-gray-400'
                   )}
@@ -57,7 +57,7 @@ export function WorkflowTracker({ currentStep, status, workflowActions = [] }: W
                   )}
                   {isCurrent && !isRejected && (
                     <>
-                      <span className="absolute inset-0 animate-ping rounded-full bg-[#1e3a5f] opacity-20" />
+                      <span className="absolute inset-0 animate-ping rounded-full bg-primary opacity-20" />
                       <span className="relative z-10 text-xs">{step.number}</span>
                     </>
                   )}
@@ -69,8 +69,8 @@ export function WorkflowTracker({ currentStep, status, workflowActions = [] }: W
                   className={cn(
                     'mt-2 max-w-[80px] text-center text-xs leading-tight',
                     isSkipped && 'text-gray-400 line-through',
-                    isCompleted && 'font-medium text-[#16a34a]',
-                    isCurrent && !isRejected && 'font-medium text-[#1e3a5f]',
+                    isCompleted && 'font-medium text-success',
+                    isCurrent && !isRejected && 'font-medium text-primary',
                     showRejected && 'font-medium text-red-600',
                     isFuture && 'text-gray-400'
                   )}
@@ -85,7 +85,7 @@ export function WorkflowTracker({ currentStep, status, workflowActions = [] }: W
                   <div
                     className={cn(
                       'h-0.5 w-full',
-                      (isCompleted || isSkipped) ? 'bg-[#16a34a]' : 'bg-gray-200'
+                      (isCompleted || isSkipped) ? 'bg-success' : 'bg-gray-200'
                     )}
                   />
                 </div>

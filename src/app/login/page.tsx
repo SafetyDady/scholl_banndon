@@ -72,12 +72,12 @@ export default function LoginPage() {
             <div
               className={cn(
                 'mx-auto w-20 h-20 rounded-full flex items-center justify-center mb-4',
-                'bg-[#1e3a5f]/10'
+                'bg-primary/10'
               )}
             >
-              <GraduationCap size={48} className="text-[#1e3a5f]" />
+              <GraduationCap size={48} className="text-primary" />
             </div>
-            <h1 className="text-2xl font-bold text-[#1e3a5f]">
+            <h1 className="text-2xl font-bold text-primary">
               ระบบบริหารจัดการ
             </h1>
             <p className="text-sm text-gray-500 mt-1">โรงเรียนวัดบ้านดอน</p>
@@ -119,7 +119,7 @@ export default function LoginPage() {
                   placeholder="กรอกชื่อผู้ใช้"
                   className={cn(
                     'w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg',
-                    'focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]',
+                    'focus:ring-2 focus:ring-primary/30 focus:border-primary',
                     'outline-none transition-colors text-gray-900 placeholder-gray-400'
                   )}
                 />
@@ -147,7 +147,7 @@ export default function LoginPage() {
                   placeholder="กรอกรหัสผ่าน"
                   className={cn(
                     'w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg',
-                    'focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]',
+                    'focus:ring-2 focus:ring-primary/30 focus:border-primary',
                     'outline-none transition-colors text-gray-900 placeholder-gray-400'
                   )}
                 />
@@ -165,7 +165,7 @@ export default function LoginPage() {
               type="submit"
               disabled={isLoading}
               className={cn(
-                'w-full h-11 bg-[#1e3a5f] hover:bg-[#163050] disabled:opacity-60',
+                'w-full h-11 bg-primary hover:bg-primary/80 disabled:opacity-60',
                 'text-white font-medium rounded-lg transition-colors duration-200',
                 'flex items-center justify-center gap-2 text-base'
               )}

@@ -336,7 +336,7 @@ export default function BalanceTemplatePage() {
 
     return (
       <div key={sectionLabel} className="mb-6">
-        <h3 className="text-sm font-semibold text-[#1e3a5f] bg-[#1e3a5f]/5 px-4 py-2.5 rounded-t-lg border border-b-0 border-gray-200">
+        <h3 className="text-sm font-semibold text-primary bg-primary/5 px-4 py-2.5 rounded-t-lg border border-b-0 border-gray-200">
           {sectionLabel}
         </h3>
         {flatItems.length === 0 ? (
@@ -386,7 +386,7 @@ export default function BalanceTemplatePage() {
                       </span>
                     </td>
                     <td className="px-4 py-2.5 text-gray-600">
-                      <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-[#1e3a5f]/10 text-[#1e3a5f]">
+                      <span className="inline-flex items-center rounded-md px-2 py-0.5 text-xs font-medium bg-primary/10 text-primary">
                         {getColumnLabel(item.column)}
                       </span>
                     </td>
@@ -504,7 +504,7 @@ export default function BalanceTemplatePage() {
           />
           <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-[#1e3a5f]">
+              <h2 className="text-lg font-semibold text-primary">
                 {editingId ? 'แก้ไขรายการ' : 'เพิ่มรายการ'}
               </h2>
               <Button
@@ -526,7 +526,7 @@ export default function BalanceTemplatePage() {
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   placeholder="เช่น เงินงบประมาณ, เงินอุดหนุน"
                   required
                 />
@@ -542,7 +542,7 @@ export default function BalanceTemplatePage() {
                   onChange={(e) =>
                     setForm({ ...form, section: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   required
                 >
                   {SECTIONS.map((s) => (
@@ -569,7 +569,7 @@ export default function BalanceTemplatePage() {
                         : null,
                     })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 >
                   <option value="">-- ไม่มี (เป็นรายการหลัก) --</option>
                   {possibleParents
@@ -592,7 +592,7 @@ export default function BalanceTemplatePage() {
                   onChange={(e) =>
                     setForm({ ...form, column: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 >
                   {COLUMNS.map((c) => (
                     <option key={c.value} value={c.value}>
@@ -646,7 +646,7 @@ export default function BalanceTemplatePage() {
                             : null,
                         })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     >
                       <option value="">-- เลือกบัญชีธนาคาร --</option>
                       {bankAccounts.map((ba) => (
@@ -671,7 +671,7 @@ export default function BalanceTemplatePage() {
                             : null,
                         })
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                     >
                       <option value="">-- เลือกประเภทเงิน --</option>
                       {budgetTypes.map((bt) => (
@@ -698,7 +698,7 @@ export default function BalanceTemplatePage() {
                       openingBalance: parseFloat(e.target.value) || 0,
                     })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   step="0.01"
                   min="0"
                 />

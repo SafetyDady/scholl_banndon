@@ -212,7 +212,7 @@ export default function ContractorsPage() {
             onClick={() => setShowModal(false)}
           />
           <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">
-            <h2 className="text-lg font-semibold text-[#1e3a5f] mb-4">
+            <h2 className="text-lg font-semibold text-primary mb-4">
               {editingId ? 'แก้ไขผู้รับจ้าง' : 'เพิ่มผู้รับจ้าง'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -224,7 +224,7 @@ export default function ContractorsPage() {
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   required
                   placeholder="ระบุชื่อผู้รับจ้าง"
                 />
@@ -237,7 +237,7 @@ export default function ContractorsPage() {
                   type="text"
                   value={form.taxId}
                   onChange={(e) => setForm({ ...form, taxId: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   placeholder="เลขประจำตัวผู้เสียภาษี 13 หลัก"
                 />
               </div>
@@ -248,7 +248,7 @@ export default function ContractorsPage() {
                 <textarea
                   value={form.address}
                   onChange={(e) => setForm({ ...form, address: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   rows={2}
                   placeholder="ที่อยู่ผู้รับจ้าง"
                 />
@@ -261,7 +261,7 @@ export default function ContractorsPage() {
                   type="text"
                   value={form.phone}
                   onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   placeholder="เบอร์โทรศัพท์"
                 />
               </div>

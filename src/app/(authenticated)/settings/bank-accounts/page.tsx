@@ -246,7 +246,7 @@ export default function BankAccountsPage() {
             onClick={() => setShowModal(false)}
           />
           <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">
-            <h2 className="text-lg font-semibold text-[#1e3a5f] mb-4">
+            <h2 className="text-lg font-semibold text-primary mb-4">
               {editingId ? 'แก้ไขบัญชีธนาคาร' : 'เพิ่มบัญชีธนาคาร'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -259,7 +259,7 @@ export default function BankAccountsPage() {
                   onChange={(e) =>
                     setForm({ ...form, bankName: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   required
                 >
                   {BANK_NAMES.map((name) => (
@@ -279,7 +279,7 @@ export default function BankAccountsPage() {
                   onChange={(e) =>
                     setForm({ ...form, accountNumber: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   required
                 />
               </div>
@@ -293,7 +293,7 @@ export default function BankAccountsPage() {
                   onChange={(e) =>
                     setForm({ ...form, accountName: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   required
                 />
               </div>
@@ -307,7 +307,7 @@ export default function BankAccountsPage() {
                   onChange={(e) =>
                     setForm({ ...form, branch: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 />
               </div>
               <div>
@@ -319,7 +319,7 @@ export default function BankAccountsPage() {
                   onChange={(e) =>
                     setForm({ ...form, accountType: e.target.value })
                   }
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 >
                   {ACCOUNT_TYPES.map((type) => (
                     <option key={type.value} value={type.value}>

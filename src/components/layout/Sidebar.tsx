@@ -61,7 +61,7 @@ export default function Sidebar({ user, collapsed, onToggle }: SidebarProps) {
   return (
     <aside
       className={cn(
-        'fixed left-0 top-14 z-30 hidden h-[calc(100vh-56px)] flex-col bg-[#1e3a5f] transition-all duration-300 lg:flex',
+        'fixed left-0 top-14 z-30 hidden h-[calc(100vh-56px)] flex-col bg-sidebar transition-all duration-300 lg:flex',
         collapsed ? 'w-16' : 'w-60'
       )}
     >
@@ -157,7 +157,7 @@ export function MobileSidebar({
 
       <aside
         className={cn(
-          'fixed left-0 top-0 z-50 flex h-full w-64 flex-col bg-[#1e3a5f] transition-transform duration-300 lg:hidden',
+          'fixed left-0 top-0 z-50 flex h-full w-64 flex-col bg-sidebar transition-transform duration-300 lg:hidden',
           open ? 'translate-x-0' : '-translate-x-full'
         )}
       >

@@ -14,11 +14,11 @@ interface StatCardProps {
 }
 
 const COLOR_MAP: Record<StatCardProps['color'], { border: string; iconBg: string; iconText: string }> = {
-  primary: { border: 'border-l-[#1e3a5f]', iconBg: 'bg-[#e8eef5]', iconText: 'text-[#1e3a5f]' },
-  success: { border: 'border-l-[#16a34a]', iconBg: 'bg-green-50',  iconText: 'text-[#16a34a]' },
-  warning: { border: 'border-l-[#f59e0b]', iconBg: 'bg-amber-50',  iconText: 'text-[#f59e0b]' },
-  danger:  { border: 'border-l-[#ef4444]', iconBg: 'bg-red-50',    iconText: 'text-[#ef4444]' },
-  info:    { border: 'border-l-[#3b82f6]', iconBg: 'bg-blue-50',   iconText: 'text-[#3b82f6]' },
+  primary: { border: 'border-l-primary', iconBg: 'bg-primary/10', iconText: 'text-primary' },
+  success: { border: 'border-l-success', iconBg: 'bg-success/10',  iconText: 'text-success' },
+  warning: { border: 'border-l-warning', iconBg: 'bg-warning/10',  iconText: 'text-warning' },
+  danger:  { border: 'border-l-destructive', iconBg: 'bg-destructive/10',    iconText: 'text-destructive' },
+  info:    { border: 'border-l-info', iconBg: 'bg-info/10',   iconText: 'text-info' },
 }
 
 export function StatCard({ title, value, suffix, icon, color, trend }: StatCardProps) {
@@ -27,24 +27,24 @@ export function StatCard({ title, value, suffix, icon, color, trend }: StatCardP
   return (
     <div
       className={cn(
-        'relative rounded-xl border border-[#e2e8f0] border-l-[3px] bg-white p-4 shadow-sm transition-shadow hover:shadow-md',
+        'relative rounded-xl border border-border border-l-[3px] bg-white p-4 shadow-sm transition-shadow hover:shadow-md',
         colors.border
       )}
     >
       <div className="flex items-start justify-between">
         <div className="space-y-1">
-          <p className="text-sm text-[#64748b]">{title}</p>
+          <p className="text-sm text-muted-foreground">{title}</p>
           <div className="flex items-baseline gap-1.5">
-            <span className="font-mono text-2xl font-bold text-[#0f172a]">{value}</span>
+            <span className="font-mono text-2xl font-bold text-foreground font-financial">{value}</span>
             {suffix && (
-              <span className="text-sm text-[#64748b]">{suffix}</span>
+              <span className="text-sm text-muted-foreground">{suffix}</span>
             )}
           </div>
           {trend && (
             <div
               className={cn(
                 'flex items-center gap-1 text-xs font-medium',
-                trend.positive ? 'text-[#16a34a]' : 'text-[#ef4444]'
+                trend.positive ? 'text-success' : 'text-destructive'
               )}
             >
               {trend.positive ? (

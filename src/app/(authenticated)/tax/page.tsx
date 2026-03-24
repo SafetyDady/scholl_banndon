@@ -48,7 +48,7 @@ export default function TaxPage() {
         subtitle={`ปีงบประมาณ ${fiscalYear}`}
         actions={
           <Link href="/tax/summary">
-            <Button className="bg-[#1e3a5f] hover:bg-[#163050] text-white gap-2">
+            <Button className="bg-primary hover:bg-primary/80 text-white gap-2">
               <FileText size={16} />
               สรุปภาษีรายเดือน
             </Button>
@@ -104,16 +104,16 @@ export default function TaxPage() {
                       <div className="text-gray-900 font-medium">{r.payeeName}</div>
                       <div className="text-xs text-gray-400 mt-0.5">{r.description}</div>
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-gray-900">
+                    <td className="px-4 py-3 text-right font-mono text-gray-900 font-financial">
                       {formatCurrency(r.amount)}
                     </td>
                     <td className="px-4 py-3 text-center text-gray-600">
                       {r.taxPercent}%
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-red-600 font-medium">
+                    <td className="px-4 py-3 text-right font-mono text-red-600 font-medium font-financial">
                       {formatCurrency(r.taxWithheld)}
                     </td>
-                    <td className="px-4 py-3 text-right font-mono text-gray-900">
+                    <td className="px-4 py-3 text-right font-mono text-gray-900 font-financial">
                       {formatCurrency(r.netAmount)}
                     </td>
                     <td className="px-4 py-3 text-center">
@@ -133,7 +133,7 @@ export default function TaxPage() {
                       ) : (
                         <button
                           onClick={() => window.open(`/api/tax/50tawi/${r.id}`, '_blank')}
-                          className="inline-flex items-center gap-1 text-xs text-white bg-[#1e3a5f] hover:bg-[#2a4f7f] px-3 py-1.5 rounded-md transition-colors"
+                          className="inline-flex items-center gap-1 text-xs text-white bg-primary hover:bg-primary/80 px-3 py-1.5 rounded-md transition-colors"
                         >
                           <FileText size={12} />
                           ออก 50 ทวิ
@@ -149,14 +149,14 @@ export default function TaxPage() {
                     รวม {records.length} ราย
                   </td>
                   <td className="px-4 py-3"></td>
-                  <td className="px-4 py-3 text-right font-bold font-mono text-gray-900">
+                  <td className="px-4 py-3 text-right font-bold font-mono text-gray-900 font-financial">
                     {formatCurrency(totalAmount)}
                   </td>
                   <td className="px-4 py-3"></td>
-                  <td className="px-4 py-3 text-right font-bold font-mono text-red-600">
+                  <td className="px-4 py-3 text-right font-bold font-mono text-red-600 font-financial">
                     {formatCurrency(totalTax)}
                   </td>
-                  <td className="px-4 py-3 text-right font-bold font-mono text-gray-900">
+                  <td className="px-4 py-3 text-right font-bold font-mono text-gray-900 font-financial">
                     {formatCurrency(totalNet)}
                   </td>
                   <td className="px-4 py-3"></td>

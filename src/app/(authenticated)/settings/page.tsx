@@ -93,20 +93,20 @@ export default function SettingsPage() {
           <button
             key={card.href}
             onClick={() => router.push(card.href)}
-            className="flex items-center gap-4 p-5 bg-white rounded-xl shadow-sm border border-gray-200 hover:border-[#1e3a5f]/30 hover:shadow-md transition-all text-left group"
+            className="flex items-center gap-4 p-5 bg-white rounded-xl shadow-sm border border-gray-200 hover:border-primary/30 hover:shadow-md transition-all text-left group"
           >
-            <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-[#1e3a5f]/10 flex items-center justify-center text-[#1e3a5f]">
+            <div className="flex-shrink-0 w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
               {card.icon}
             </div>
             <div className="flex-1 min-w-0">
-              <h3 className="text-sm font-semibold text-[#1e3a5f]">
+              <h3 className="text-sm font-semibold text-primary">
                 {card.title}
               </h3>
               <p className="text-xs text-gray-500 mt-0.5">{card.description}</p>
             </div>
             <ChevronRight
               size={18}
-              className="text-gray-400 group-hover:text-[#1e3a5f] transition-colors flex-shrink-0"
+              className="text-gray-400 group-hover:text-primary transition-colors flex-shrink-0"
             />
           </button>
         ))}

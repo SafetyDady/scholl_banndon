@@ -174,7 +174,7 @@ export default function TaxSummaryPage() {
                       <td className="px-4 py-3 text-right font-mono text-gray-600">
                         {m.count}
                       </td>
-                      <td className="px-4 py-3 text-right font-mono text-red-600 font-medium">
+                      <td className="px-4 py-3 text-right font-mono text-red-600 font-medium font-financial">
                         {formatCurrency(m.totalTax)}
                       </td>
                       <td className="px-4 py-3 text-gray-600">
@@ -197,7 +197,7 @@ export default function TaxSummaryPage() {
                   <td className="px-4 py-3 text-right font-bold font-mono text-gray-900">
                     {totalCount}
                   </td>
-                  <td className="px-4 py-3 text-right font-bold font-mono text-red-600">
+                  <td className="px-4 py-3 text-right font-bold font-mono text-red-600 font-financial">
                     {formatCurrency(totalTax)}
                   </td>
                   <td colSpan={2} />

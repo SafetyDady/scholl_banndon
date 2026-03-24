@@ -8,9 +8,9 @@ interface PageHeaderProps {
 
 export function PageHeader({ title, subtitle, actions }: PageHeaderProps) {
   return (
-    <div className={cn('flex items-center justify-between border-b border-[#e2e8f0] py-4')}>
+    <div className={cn('flex items-center justify-between border-b border-border py-4')}>
       <div>
-        <h1 className="text-xl font-semibold text-[#1e3a5f]">{title}</h1>
+        <h1 className="text-xl font-semibold text-primary">{title}</h1>
         {subtitle && (
           <p className="mt-0.5 text-sm text-muted-foreground">{subtitle}</p>
         )}

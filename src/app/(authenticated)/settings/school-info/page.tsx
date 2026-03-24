@@ -86,7 +86,7 @@ export default function SchoolInfoPage() {
           <Button
             onClick={handleSave}
             disabled={saving}
-            className="bg-[#16a34a] hover:bg-[#15803d] text-white gap-2"
+            className="bg-success hover:bg-success/80 text-white gap-2"
           >
             {saving ? (
               <Loader2 size={16} className="animate-spin" />
@@ -103,8 +103,8 @@ export default function SchoolInfoPage() {
       {/* ข้อมูลโรงเรียน */}
       <div className="bg-white rounded-xl shadow-sm border p-6">
         <div className="flex items-center gap-2 mb-6">
-          <School size={20} className="text-[#1e3a5f]" />
-          <h2 className="text-lg font-semibold text-[#1e3a5f]">ข้อมูลโรงเรียน</h2>
+          <School size={20} className="text-primary" />
+          <h2 className="text-lg font-semibold text-primary">ข้อมูลโรงเรียน</h2>
         </div>
 
         <div className="space-y-4">
@@ -119,7 +119,7 @@ export default function SchoolInfoPage() {
                   onChange={(e) => handleChange(field.key, e.target.value)}
                   placeholder={field.placeholder}
                   rows={3}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 />
               ) : (
                 <input
@@ -127,7 +127,7 @@ export default function SchoolInfoPage() {
                   value={data[field.key] || ''}
                   onChange={(e) => handleChange(field.key, e.target.value)}
                   placeholder={field.placeholder}
-                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                 />
               )}
             </div>
@@ -138,8 +138,8 @@ export default function SchoolInfoPage() {
       {/* ผู้บริหาร */}
       <div className="bg-white rounded-xl shadow-sm border p-6">
         <div className="flex items-center gap-2 mb-6">
-          <Users size={20} className="text-[#1e3a5f]" />
-          <h2 className="text-lg font-semibold text-[#1e3a5f]">ผู้บริหารและเจ้าหน้าที่</h2>
+          <Users size={20} className="text-primary" />
+          <h2 className="text-lg font-semibold text-primary">ผู้บริหารและเจ้าหน้าที่</h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -153,7 +153,7 @@ export default function SchoolInfoPage() {
                 value={data[field.key] || ''}
                 onChange={(e) => handleChange(field.key, e.target.value)}
                 placeholder={field.placeholder}
-                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1e3a5f]/30 focus:border-[#1e3a5f]"
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
               />
             </div>
           ))}
@@ -165,7 +165,7 @@ export default function SchoolInfoPage() {
         <Button
           onClick={handleSave}
           disabled={saving}
-          className="bg-[#16a34a] hover:bg-[#15803d] text-white gap-2"
+          className="bg-success hover:bg-success/80 text-white gap-2"
         >
           {saving ? (
             <Loader2 size={16} className="animate-spin" />

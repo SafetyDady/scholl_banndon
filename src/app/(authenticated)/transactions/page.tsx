@@ -94,7 +94,7 @@ export default function TransactionsPage() {
           <select
             value={filterType}
             onChange={(e) => { setFilterType(e.target.value as 'all' | 'withdrawal' | 'deposit'); setPage(1) }}
-            className="rounded-md border border-[#e2e8f0] bg-white px-3 py-2 text-sm focus:border-[#1e3a5f] focus:outline-none focus:ring-1 focus:ring-[#1e3a5f]"
+            className="rounded-md border border-[#e2e8f0] bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           >
             <option value="all">ทั้งหมด</option>
             <option value="withdrawal">เงินออก (ถอน)</option>
@@ -107,7 +107,7 @@ export default function TransactionsPage() {
             type="date"
             value={dateFrom}
             onChange={(e) => { setDateFrom(e.target.value); setPage(1) }}
-            className="rounded-md border border-[#e2e8f0] px-3 py-2 text-sm focus:border-[#1e3a5f] focus:outline-none"
+            className="rounded-md border border-[#e2e8f0] px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         </div>
         <div>
@@ -116,7 +116,7 @@ export default function TransactionsPage() {
             type="date"
             value={dateTo}
             onChange={(e) => { setDateTo(e.target.value); setPage(1) }}
-            className="rounded-md border border-[#e2e8f0] px-3 py-2 text-sm focus:border-[#1e3a5f] focus:outline-none"
+            className="rounded-md border border-[#e2e8f0] px-3 py-2 text-sm focus:border-primary focus:outline-none"
           />
         </div>
         {(dateFrom || dateTo || filterType !== 'all') && (
@@ -135,7 +135,7 @@ export default function TransactionsPage() {
       <div className="rounded-lg border border-[#e2e8f0] bg-white">
         {loading ? (
           <div className="flex items-center justify-center py-16">
-            <Loader2 className="h-6 w-6 animate-spin text-[#1e3a5f]" />
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
             <span className="ml-2 text-sm text-gray-500">กำลังโหลด...</span>
           </div>
         ) : !data?.data?.length ? (
@@ -149,13 +149,13 @@ export default function TransactionsPage() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-[#e2e8f0] bg-[#f8fafc]">
-                    <th className="px-4 py-3 text-left font-medium text-[#1e3a5f]">วันที่</th>
-                    <th className="px-4 py-3 text-center font-medium text-[#1e3a5f]">ประเภท</th>
-                    <th className="px-4 py-3 text-left font-medium text-[#1e3a5f]">บัญชี</th>
-                    <th className="px-4 py-3 text-left font-medium text-[#1e3a5f]">หมายเหตุ</th>
-                    <th className="px-4 py-3 text-left font-medium text-[#1e3a5f]">ผูกกับ</th>
-                    <th className="px-4 py-3 text-right font-medium text-[#1e3a5f]">จำนวนเงิน</th>
-                    <th className="px-4 py-3 text-right font-medium text-[#1e3a5f]">คงเหลือ</th>
+                    <th className="px-4 py-3 text-left font-medium text-primary">วันที่</th>
+                    <th className="px-4 py-3 text-center font-medium text-primary">ประเภท</th>
+                    <th className="px-4 py-3 text-left font-medium text-primary">บัญชี</th>
+                    <th className="px-4 py-3 text-left font-medium text-primary">หมายเหตุ</th>
+                    <th className="px-4 py-3 text-left font-medium text-primary">ผูกกับ</th>
+                    <th className="px-4 py-3 text-right font-medium text-primary">จำนวนเงิน</th>
+                    <th className="px-4 py-3 text-right font-medium text-primary">คงเหลือ</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -172,12 +172,12 @@ export default function TransactionsPage() {
                         </td>
                         <td className="px-4 py-3 text-center">
                           {isWithdrawal ? (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-destructive/15 px-2.5 py-0.5 text-xs font-medium text-destructive">
                               <ArrowUpCircle className="h-3.5 w-3.5" />
                               ถอน
                             </span>
                           ) : (
-                            <span className="inline-flex items-center gap-1 rounded-full bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700">
+                            <span className="inline-flex items-center gap-1 rounded-full bg-success/15 px-2.5 py-0.5 text-xs font-medium text-success">
                               <ArrowDownCircle className="h-3.5 w-3.5" />
                               ฝาก
                             </span>
@@ -192,21 +192,21 @@ export default function TransactionsPage() {
                         </td>
                         <td className="px-4 py-3">
                           {s.approvalRequest ? (
-                            <span className="text-xs text-[#1e3a5f] font-medium">
+                            <span className="text-xs text-primary font-medium">
                               {s.approvalRequest.memoNumber || `#${s.id}`}
                             </span>
                           ) : (
                             <span className="text-xs text-gray-400">-</span>
                           )}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-right font-medium">
+                        <td className="whitespace-nowrap px-4 py-3 text-right font-medium font-financial">
                           {isWithdrawal ? (
                             <span className="text-red-600">-{formatCurrency(amount)}</span>
                           ) : (
                             <span className="text-green-600">+{formatCurrency(amount)}</span>
                           )}
                         </td>
-                        <td className="whitespace-nowrap px-4 py-3 text-right text-gray-700">
+                        <td className="whitespace-nowrap px-4 py-3 text-right text-gray-700 font-financial">
                           {formatCurrency(s.balance)}
                         </td>
                       </tr>
