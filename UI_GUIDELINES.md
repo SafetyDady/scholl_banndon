@@ -24,16 +24,16 @@ COLORS = {
   // Semantic
   success:        '#16a34a'     // สำเร็จ, อนุมัติ
   warning:        '#f59e0b'     // คำเตือน, รอดำเนินการ
-  danger:         '#ef4444'     // ผิดพลาด, ไม่อนุมัติ, ลบ
+  danger:         '#dc2626'     // ผิดพลาด, ไม่อนุมัติ, ลบ
   info:           '#3b82f6'     // ข้อมูล
 
   // Background
-  bg:             '#ffffff'     // พื้นหลักหน้าจอ
+  bg:             '#fafaf9'     // พื้นหลักหน้าจอ (warm gray)
   surface:        '#f8fafc'     // พื้นหลัง card, content area
   surfaceHover:   '#f1f5f9'     // Hover state ของ row/card
 
   // Sidebar
-  sidebar:        '#1e3a5f'     // พื้นหลัง sidebar (น้ำเงินเข้ม)
+  sidebar:        '#1a2e4a'     // พื้นหลัง sidebar (น้ำเงินเข้ม)
   sidebarHover:   '#2a4d76'     // Hover เมนู
   sidebarActive:  '#ffffff20'   // Active menu (ขาว 12%)
   sidebarText:    '#ffffff'     // ตัวหนังสือขาวบน sidebar
@@ -50,10 +50,12 @@ COLORS = {
 }
 ```
 
+> ข้อบังคับ: ใช้ Tailwind CSS variables (bg-primary, text-success, bg-warning/15) ไม่ hardcode hex color ในโค้ด
+
 ### Contrast Ratios (WCAG 2.1 AA Compliant)
-- text (#0f172a) on bg (#ffffff): 17.4:1 ✅ AAA
+- text (#0f172a) on bg (#fafaf9): 16.9:1 ✅ AAA
 - textSecondary (#64748b) on bg: 5.4:1 ✅ AA
-- sidebarText (#ffffff) on sidebar (#1e3a5f): 9.8:1 ✅ AAA
+- sidebarText (#ffffff) on sidebar (#1a2e4a): 11.3:1 ✅ AAA
 
 ---
 
@@ -62,6 +64,11 @@ COLORS = {
 ### Font Family
 - **หลัก**: `'Sarabun', sans-serif` (ภาษาไทย + อังกฤษ)
 - **ตัวเลข/รหัส**: `'IBM Plex Mono', monospace` (จำนวนเงิน, เลขที่เอกสาร, ลำดับ)
+
+### Financial Numbers
+- Class: `.font-financial`
+- Font: IBM Plex Mono + font-variant-numeric: tabular-nums
+- ใช้กับ: ยอดเงินทุกที่ที่แสดง formatCurrency
 
 ### Font Weights
 - 300: Light (ข้อความรอง เล็กๆ)
@@ -112,9 +119,19 @@ import { LayoutDashboard, FileText, DollarSign } from 'lucide-react'
 | หน้าหลัก | `LayoutDashboard` |
 | รายการเบิกจ่าย | `FileText` |
 | รายการรออนุมัติ | `ClipboardCheck` |
+| เงินเคลื่อนไหว | `ArrowLeftRight` |
+| สมุดบัญชี | `BookOpen` |
 | รายงานเงินคงเหลือ | `Wallet` |
+| กระทบยอด | `Scale` |
 | หักภาษี ณ ที่จ่าย | `Receipt` |
-| ตั้งค่า | `Settings` |
+| ข้อมูลโรงเรียน | `School` |
+| บัญชีธนาคาร | `Landmark` |
+| ประเภทเงิน | `Tags` |
+| ผู้รับจ้าง | `UserCheck` |
+| รายการรายงานคงเหลือ | `FileSpreadsheet` |
+| ตั้งค่า Workflow | `GitBranch` |
+| ผู้ใช้งาน | `Users` |
+| สิทธิ์การใช้งาน | `Shield` |
 | ออกจากระบบ | `LogOut` |
 
 ---
@@ -152,17 +169,17 @@ npx shadcn@latest init
 <StatusBadge status="PENDING_APPROVAL" />
 ```
 
-| Status | สีพื้น | สีตัวหนังสือ | Label |
-|--------|--------|-------------|-------|
-| DRAFT | gray-100 | gray-700 | ร่าง |
-| PENDING_APPROVAL | amber-50 | amber-700 | รออนุมัติ |
-| APPROVED | blue-50 | blue-700 | อนุมัติแล้ว |
-| WITHDRAWN | indigo-50 | indigo-700 | เบิกเงินแล้ว |
-| PAID | purple-50 | purple-700 | จ่ายเงินแล้ว |
-| TAX_ISSUED | pink-50 | pink-700 | ออกใบ 50 ทวิแล้ว |
-| BALANCE_REPORTED | teal-50 | teal-700 | รายงานยอดแล้ว |
-| COMPLETED | green-50 | green-700 | เสร็จสิ้น |
-| REJECTED | red-50 | red-700 | ไม่อนุมัติ |
+| Status | Semantic Color | Label |
+|--------|---------------|-------|
+| DRAFT | muted | ร่าง |
+| PENDING_APPROVAL | warning | รออนุมัติ |
+| APPROVED | info | อนุมัติแล้ว |
+| WITHDRAWN | info | เบิกเงินแล้ว |
+| PAID | success | จ่ายเงินแล้ว |
+| COMPLETED | success | เสร็จสิ้น |
+| REJECTED | destructive | ไม่อนุมัติ |
+
+> StatusBadge ใช้ CSS variables: bg-{color}/15 text-{color} + dot indicator
 
 - border-radius: 6px
 - font-size: 12px, font-weight: 600
@@ -189,13 +206,15 @@ Dashboard summary card
 - Hover: shadow-md transition
 
 #### 4.4 WorkflowTracker
-แสดง 7 ขั้นตอนของ workflow
+แสดง 4 ขั้นตอนของ workflow
 
 ```
- (1)-----(2)-----(3)-----(4)-----(5)-----(6)-----(7)
-  ✓       ✓       ●       ○       ○       ○       ○
-ยื่นเรื่อง  อนุมัติ  เบิกเงิน  จ่ายเงิน  50 ทวิ  คงเหลือ  สรุปภาษี
+ (1)-----(2)-----(3)-----(4)
+  ✓       ✓       ●       ○
+ยื่นเรื่อง  ขออนุมัติ  เบิกเงิน  นำจ่าย
 ```
+
+> 50 ทวิ และรายงานคงเหลือ อยู่เมนูแยก ไม่รวมใน workflow
 
 - ✓ สำเร็จ: วงกลมเขียว + checkmark ขาว
 - ● กำลังดำเนินการ: วงกลมน้ำเงินเข้ม + pulse animation
@@ -212,7 +231,8 @@ Dashboard summary card
 - ย่อ: width 64px (แสดงแค่ icon)
 - ขยาย: width 240px (icon + ชื่อเมนู)
 - Toggle button: ด้านล่าง sidebar
-- พื้นหลัง: `#1e3a5f` (น้ำเงินเข้ม)
+- พื้นหลัง: `#1a2e4a` (น้ำเงินเข้ม)
+- Sidebar แบ่ง 2 section: การเงิน (8 เมนู) + ตั้งค่า (8 เมนู)
 - ตัวหนังสือ: ขาว
 - Active menu: พื้นขาว 12% opacity + เส้นซ้าย 3px ขาว
 - Hover: พื้น `#2a4d76`
@@ -248,7 +268,6 @@ Dashboard summary card
 ### 6.3 Mobile Experience (ผ่าน LINE)
 - สามารถ **ดูข้อมูล** ทุกอย่างตาม role
 - สามารถ **อนุมัติ/ไม่อนุมัติ** (สำหรับ รอง ผอ. / ผอ.)
-- **ไม่สามารถ** สร้าง/แก้ไขรายการเบิกจ่าย (ต้องทำบน Desktop)
 - Bottom Navigation bar สำหรับ mobile (แทน sidebar)
 
 ---
@@ -422,7 +441,7 @@ Bottom Navigation items (เปลี่ยนตาม Module ที่ active)
 - Label: 13px, font-weight 500, textSecondary, อยู่ข้างบน input
 - Input: border `#e2e8f0`, rounded-lg, padding 10px 14px
 - Focus: border `#1e3a5f` (primary), ring-2 `#1e3a5f20`
-- Error: border `#ef4444`, ข้อความ error สีแดงด้านล่าง
+- Error: border `#dc2626`, ข้อความ error สีแดงด้านล่าง
 - Required: แสดง * สีแดง หลัง label
 - Disabled: background `#f8fafc`, text `#94a3b8`
 
@@ -430,7 +449,7 @@ Bottom Navigation items (เปลี่ยนตาม Module ที่ active)
 - **Primary**: bg `#1e3a5f`, text ขาว, rounded-lg (สำหรับ action หลัก)
 - **Secondary**: bg `#16a34a`, text ขาว (สำหรับ action รอง เช่น อนุมัติ)
 - **Outline**: border `#e2e8f0`, text `#1e3a5f` (สำหรับ action ทั่วไป)
-- **Danger**: bg `#ef4444`, text ขาว (ลบ, ไม่อนุมัติ)
+- **Danger**: bg `#dc2626`, text ขาว (ลบ, ไม่อนุมัติ)
 - **Ghost**: ไม่มี border, text primary (link-style)
 - ทุกปุ่ม: min-height 40px, padding 8px 20px
 
