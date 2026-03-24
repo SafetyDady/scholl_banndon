@@ -1,12 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { Geist } from "next/font/google";
-import { cn } from "@/lib/utils";
-
-const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 export const metadata: Metadata = {
-  title: "ระบบการเงิน โรงเรียนวัดบ้านดอน",
+  title: "ระบบบริหารการเงิน โรงเรียนวัดบ้านดอน",
   description: "ระบบจัดการการเงินโรงเรียนวัดบ้านดอน",
   icons: {
     icon: [
@@ -24,8 +20,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="th" className={cn("font-sans", geist.variable)}>
-      <body className="antialiased">
+    <html lang="th">
+      <body>
         {children}
       </body>
     </html>
