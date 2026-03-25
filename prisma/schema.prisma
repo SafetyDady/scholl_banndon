@@ -124,6 +124,9 @@ model ApprovalRequest {
   currentStep    Int      @default(1)
   status         String   @default("DRAFT")
 
+  // Snapshot ผู้ลงนาม ณ วันที่ออกเอกสาร (JSON: { finance, vp, principal })
+  docSignatories Json?
+
   createdById    Int
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -312,6 +315,10 @@ model BalanceReportIssued {
   fiscalYear Int
   issuedAt   DateTime @default(now())
   issuedById Int
+
+  // Snapshot ผู้ลงนาม ณ วันที่ออกรายงาน
+  // JSON: { finance, principal, vp, committee: [{name, position}] }
+  signatories Json?
 
   issuedBy User @relation("BalanceReportIssuedBy", fields: [issuedById], references: [id])
 

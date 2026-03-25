@@ -59,13 +59,34 @@ export async function GET(
     }
 
     const schoolName = si['school_name'] || 'โรงเรียนวัดบ้านดอน'
-    const schoolDept = si['school_dept'] || 'สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาระยองเขต 1'
-    const principalName = si['principal_name'] || ''
-    const principalTitle = si['principal_title'] || `ผู้อำนวยการ${schoolName}`
-    const vicePrincipalName = si['vice_principal_1_name'] || ''
-    const vicePrincipalTitle = si['vice_principal_1_title'] || `รองผู้อำนวยการ${schoolName}`
-    const financeName = si['finance_name'] || approval.createdBy.fullName
-    const financeTitle = si['finance_title'] || 'เจ้าหน้าที่การเงิน'
+    const schoolDept = si['school_department'] || 'สังกัดสำนักงานเขตพื้นที่การศึกษาประถมศึกษาระยองเขต 1'
+
+    // ใช้ snapshot ถ้ามี (เอกสารที่เคยออกแล้ว) ไม่งั้นใช้จาก query params หรือ SchoolInfo
+    const { searchParams } = new URL(request.url)
+    const sigParam = searchParams.get('signatories')
+    type SigPerson = { name: string; position: string }
+    type SigData = { finance: SigPerson; viceP: SigPerson; principal: SigPerson }
+    let sig: SigData | null = null
+
+    if (approval.docSignatories) {
+      sig = approval.docSignatories as unknown as SigData
+    } else if (sigParam) {
+      try {
+        sig = JSON.parse(decodeURIComponent(sigParam))
+        // Save snapshot
+        await prisma.approvalRequest.update({
+          where: { id: approvalId },
+          data: { docSignatories: sig as object },
+        })
+      } catch { /* ignore parse error */ }
+    }
+
+    const financeName = sig?.finance?.name || si['finance_officer_name'] || approval.createdBy.fullName
+    const financeTitle = sig?.finance?.position || si['finance_officer_position'] || 'เจ้าหน้าที่การเงิน'
+    const vicePrincipalName = sig?.viceP?.name || si['vice_principal_1_name'] || ''
+    const vicePrincipalTitle = sig?.viceP?.position || si['vice_principal_1_position'] || `รองผู้อำนวยการ${schoolName}`
+    const principalName = sig?.principal?.name || si['principal_name'] || ''
+    const principalTitle = sig?.principal?.position || si['principal_position'] || `ผู้อำนวยการ${schoolName}`
 
     // Format Thai date
     const d = new Date(approval.requestDate)

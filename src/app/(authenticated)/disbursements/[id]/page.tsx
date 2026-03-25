@@ -8,6 +8,7 @@ import { WORKFLOW_STEPS } from '@/lib/constants'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { StatusBadge } from '@/components/shared/StatusBadge'
 import { WorkflowTracker } from '@/components/shared/WorkflowTracker'
+import SignatorySelector, { type SignatoryData } from '@/components/shared/SignatorySelector'
 import { Printer, ArrowLeft, Clock, Inbox, Pencil, Trash2, CreditCard, Search, Plus, ChevronDown, UserCheck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import type { ApprovalRequestDetail, WorkflowActionInfo } from '@/types'
@@ -209,6 +210,8 @@ export default function DisbursementDetailPage() {
   const [showAdminStatus, setShowAdminStatus] = useState(false)
   const [adminStatus, setAdminStatus] = useState('')
   const [adminStep, setAdminStep] = useState(1)
+  const [showSignatory, setShowSignatory] = useState(false)
+  const [downloadingDoc, setDownloadingDoc] = useState(false)
   const [adminComment, setAdminComment] = useState('')
   const [userRole, setUserRole] = useState('')
 
@@ -521,14 +524,20 @@ export default function DisbursementDetailPage() {
                 </button>
               </>
             )}
-            <a
-              href={`/api/print/approval/${data.id}`}
-              download
+            <button
+              onClick={() => {
+                // ถ้ามี snapshot แล้ว ดาวน์โหลดเลย ถ้ายังไม่มี เปิด modal เลือกผู้ลงนาม
+                if (data.docSignatories) {
+                  window.open(`/api/print/approval/${data.id}`, '_blank')
+                } else {
+                  setShowSignatory(true)
+                }
+              }}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg transition-colors"
             >
               <Printer size={16} />
               ดาวน์โหลด Word
-            </a>
+            </button>
           </div>
         }
       />
@@ -1122,6 +1131,29 @@ export default function DisbursementDetailPage() {
           กลับไปยังรายการเบิกจ่าย
         </Link>
       </div>
+
+      {/* SignatorySelector Modal */}
+      <SignatorySelector
+        open={showSignatory}
+        onClose={() => setShowSignatory(false)}
+        type="approval"
+        loading={downloadingDoc}
+        onConfirm={async (sigData: SignatoryData) => {
+          setDownloadingDoc(true)
+          try {
+            const sigJson = encodeURIComponent(JSON.stringify(sigData))
+            const url = `/api/print/approval/${data.id}?signatories=${sigJson}`
+            window.open(url, '_blank')
+            setShowSignatory(false)
+            // Refresh to get snapshot
+            window.location.reload()
+          } catch {
+            alert('เกิดข้อผิดพลาด')
+          } finally {
+            setDownloadingDoc(false)
+          }
+        }}
+      />
     </div>
   )
 }

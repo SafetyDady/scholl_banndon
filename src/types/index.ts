@@ -105,6 +105,7 @@ export interface ApprovalRequestDetail {
   createdBy: { id: number; fullName: string }
   disbursementGroups: DisbursementGroupInfo[]
   workflowActions: WorkflowActionInfo[]
+  docSignatories: Record<string, unknown> | null
 }
 
 // Keep old type for backward compat if needed

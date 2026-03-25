@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
-import { Save, School, Users, Loader2, CheckCircle } from 'lucide-react'
+import { Save, School, Users, Shield, Loader2, CheckCircle } from 'lucide-react'
 
 const SCHOOL_FIELDS = [
   { key: 'school_name', label: 'ชื่อโรงเรียน', placeholder: 'เช่น โรงเรียนวัดบ้านดอน' },
@@ -22,6 +22,15 @@ const EXECUTIVE_FIELDS = [
   { key: 'vice_principal_2_position', label: 'รองผู้อำนวยการ คนที่ 2 — ตำแหน่ง', placeholder: '' },
   { key: 'finance_officer_name', label: 'เจ้าหน้าที่การเงิน — ชื่อ', placeholder: 'เช่น นางมณฑิรา สายยศ' },
   { key: 'finance_officer_position', label: 'เจ้าหน้าที่การเงิน — ตำแหน่ง', placeholder: 'เช่น ครูชำนาญการพิเศษ' },
+]
+
+const COMMITTEE_FIELDS = [
+  { key: 'committee_1_name', label: 'กรรมการคนที่ 1 — ชื่อ', placeholder: 'เช่น นางอารีย์ พัชรนฤมล' },
+  { key: 'committee_1_position', label: 'กรรมการคนที่ 1 — ตำแหน่ง', placeholder: 'กรรมการ' },
+  { key: 'committee_2_name', label: 'กรรมการคนที่ 2 — ชื่อ', placeholder: 'เช่น นางธัญสินี จันทร์บุตร' },
+  { key: 'committee_2_position', label: 'กรรมการคนที่ 2 — ตำแหน่ง', placeholder: 'กรรมการ' },
+  { key: 'committee_3_name', label: 'กรรมการคนที่ 3 — ชื่อ', placeholder: 'เช่น นางสาวรัตนา บำรุงจันทร์' },
+  { key: 'committee_3_position', label: 'กรรมการคนที่ 3 — ตำแหน่ง', placeholder: 'กรรมการ' },
 ]
 
 export default function SchoolInfoPage() {
@@ -144,6 +153,34 @@ export default function SchoolInfoPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {EXECUTIVE_FIELDS.map((field) => (
+            <div key={field.key}>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                {field.label}
+              </label>
+              <input
+                type="text"
+                value={data[field.key] || ''}
+                onChange={(e) => handleChange(field.key, e.target.value)}
+                placeholder={field.placeholder}
+                className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
+              />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* กรรมการเก็บรักษาเงิน */}
+      <div className="bg-white rounded-xl shadow-sm border p-6">
+        <div className="flex items-center gap-2 mb-6">
+          <Shield size={20} className="text-primary" />
+          <h2 className="text-lg font-semibold text-primary">กรรมการเก็บรักษาเงิน</h2>
+        </div>
+        <p className="text-sm text-muted-foreground mb-4">
+          รายชื่อกรรมการเก็บรักษาเงิน สำหรับลงนามในรายงานเงินคงเหลือ
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {COMMITTEE_FIELDS.map((field) => (
             <div key={field.key}>
               <label className="block text-sm font-medium text-gray-700 mb-1">
                 {field.label}
