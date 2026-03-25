@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { formatCurrency, formatShortDate, getCurrentFiscalYear } from '@/lib/utils'
 import { PageHeader } from '@/components/shared/PageHeader'
 import { Button } from '@/components/ui/button'
+import SignatorySelector, { type SignatoryData } from '@/components/shared/SignatorySelector'
 import {
   FileText,
   Download,
@@ -48,6 +49,7 @@ export default function BalanceChangesPage() {
   const [data, setData] = useState<ChangesResponse | null>(null)
   const [loading, setLoading] = useState(true)
   const [issuingDate, setIssuingDate] = useState<string | null>(null)
+  const [showSignatory, setShowSignatory] = useState<string | null>(null) // date string
   const fiscalYear = getCurrentFiscalYear()
 
   const fetchData = useCallback(async () => {
@@ -67,18 +69,20 @@ export default function BalanceChangesPage() {
     fetchData()
   }, [fetchData])
 
-  const handleIssue = async (date: string) => {
-    if (!confirm(`ต้องการออกรายงานเงินคงเหลือวันที่ ${formatShortDate(date)} หรือไม่?`)) return
-
+  const handleIssue = async (date: string, signatories?: SignatoryData) => {
     setIssuingDate(date)
     try {
       const res = await fetch(`/api/balance/issue/${date}`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ signatories }),
       })
 
       if (res.ok) {
-        // Refresh data to reflect the new status
+        setShowSignatory(null)
         await fetchData()
+        // Auto-download the Excel
+        window.open(`/api/balance/issue/${date}`, '_blank')
       } else {
         const err = await res.json()
         alert(err.error || 'เกิดข้อผิดพลาด')
@@ -204,7 +208,7 @@ export default function BalanceChangesPage() {
                         </a>
                       ) : (
                         <Button
-                          onClick={() => handleIssue(entry.date)}
+                          onClick={() => setShowSignatory(entry.date)}
                           disabled={issuingDate === entry.date}
                           className="bg-primary text-white hover:bg-primary/80 text-xs"
                           size="sm"
@@ -225,6 +229,19 @@ export default function BalanceChangesPage() {
           </div>
         )}
       </div>
+
+      {/* SignatorySelector Modal */}
+      <SignatorySelector
+        open={!!showSignatory}
+        onClose={() => setShowSignatory(null)}
+        type="balance"
+        loading={!!issuingDate}
+        onConfirm={async (sigData: SignatoryData) => {
+          if (showSignatory) {
+            await handleIssue(showSignatory, sigData)
+          }
+        }}
+      />
     </div>
   )
 }

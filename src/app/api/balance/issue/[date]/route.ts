@@ -85,11 +85,37 @@ export async function POST(
       )
     }
 
+    // Get signatories from request body (if provided)
+    let signatories = null
+    try {
+      const body = await request.json()
+      if (body.signatories) {
+        signatories = body.signatories
+      }
+    } catch {
+      // No body or invalid JSON — use SchoolInfo defaults
+      const schoolInfoRows = await prisma.schoolInfo.findMany()
+      const si: Record<string, string> = {}
+      for (const row of schoolInfoRows) si[row.key] = row.value
+
+      signatories = {
+        finance: { name: si['finance_officer_name'] || '', position: si['finance_officer_position'] || 'เจ้าหน้าที่การเงิน' },
+        viceP: { name: si['vice_principal_1_name'] || '', position: si['vice_principal_1_position'] || 'รองผู้อำนวยการ' },
+        principal: { name: si['principal_name'] || '', position: si['principal_position'] || 'ผู้อำนวยการ' },
+        committee: [
+          { name: si['committee_1_name'] || '', position: si['committee_1_position'] || 'กรรมการ' },
+          { name: si['committee_2_name'] || '', position: si['committee_2_position'] || 'กรรมการ' },
+          { name: si['committee_3_name'] || '', position: si['committee_3_position'] || 'กรรมการ' },
+        ],
+      }
+    }
+
     const record = await prisma.balanceReportIssued.create({
       data: {
         reportDate,
         fiscalYear,
         issuedById: session.id,
+        signatories: signatories as object,
       },
     })
 
@@ -412,30 +438,31 @@ export async function GET(
     const grandTotal = grandCash + grandBank + grandDept
     if (grandTotal !== 0) setCell(GRAND_TOTAL_ROW, COL_SUM, grandTotal)
 
-    // === Fill signatures from SchoolInfo ===
-    // I38: เจ้าหน้าที่การเงิน (ผู้รายงาน)
-    if (schoolInfo['finance_officer_name']) {
-      setCellRef('I38', schoolInfo['finance_officer_name'])
-    }
+    // === Fill signatures — use snapshot if available, otherwise SchoolInfo ===
+    const issued = await prisma.balanceReportIssued.findUnique({
+      where: { reportDate_fiscalYear: { reportDate: new Date(`${date}T00:00:00.000Z`), fiscalYear: getCurrentFiscalYear() } },
+    })
 
+    type SigPerson = { name: string; position: string }
+    type SigData = { finance: SigPerson; viceP: SigPerson; principal: SigPerson; committee?: SigPerson[] }
+    const sig = (issued?.signatories as unknown as SigData) || null
+
+    const financeName = sig?.finance?.name || schoolInfo['finance_officer_name'] || ''
+    const vpName = sig?.viceP?.name || schoolInfo['vice_principal_1_name'] || ''
+    const principalName = sig?.principal?.name || schoolInfo['principal_name'] || ''
+    const committee1 = sig?.committee?.[0]?.name || schoolInfo['committee_1_name'] || ''
+    const committee2 = sig?.committee?.[1]?.name || schoolInfo['committee_2_name'] || ''
+    const committee3 = sig?.committee?.[2]?.name || schoolInfo['committee_3_name'] || ''
+
+    // I38: เจ้าหน้าที่การเงิน
+    if (financeName) setCellRef('I38', `( ${financeName})`)
     // C43, G43, J43: กรรมการ 3 คน
-    if (schoolInfo['committee_1_name']) {
-      setCellRef('C43', schoolInfo['committee_1_name'])
-    }
-    if (schoolInfo['committee_2_name']) {
-      setCellRef('G43', schoolInfo['committee_2_name'])
-    }
-    if (schoolInfo['committee_3_name']) {
-      setCellRef('J43', schoolInfo['committee_3_name'])
-    }
-
+    if (committee1) setCellRef('C43', committee1)
+    if (committee2) setCellRef('G43', committee2)
+    if (committee3) setCellRef('J43', committee3)
     // E46: รอง ผอ., I46: ผอ.
-    if (schoolInfo['vice_principal_name']) {
-      setCellRef('E46', schoolInfo['vice_principal_name'])
-    }
-    if (schoolInfo['principal_name']) {
-      setCellRef('I46', schoolInfo['principal_name'])
-    }
+    if (vpName) setCellRef('E46', `(${vpName})`)
+    if (principalName) setCellRef('I46', `(${principalName})`)
 
     // === Generate Excel buffer ===
     const buffer = await workbook.xlsx.writeBuffer()
