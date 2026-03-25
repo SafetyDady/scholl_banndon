@@ -325,11 +325,12 @@ model BalanceReportIssued {
   @@unique([reportDate, fiscalYear])
 }
 
-// ===== CONTRACTOR (ผู้รับจ้าง) =====
+// ===== PAYEE / CONTRACTOR (ผู้รับเงิน) =====
 
 model Contractor {
   id        Int      @id @default(autoincrement())
   name      String
+  type      String   @default("PERSON") // PERSON | COMPANY | GOVERNMENT | OTHER
   taxId     String?
   address   String?
   phone     String?

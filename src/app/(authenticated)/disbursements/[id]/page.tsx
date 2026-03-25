@@ -144,7 +144,7 @@ function ContractorSearchInput({
             setOpen(true)
           }}
           onFocus={() => setOpen(true)}
-          placeholder="ค้นหาผู้รับจ้าง"
+          placeholder="ค้นหาหรือพิมพ์ชื่อผู้รับเงิน"
           className="w-full rounded border border-gray-300 pl-7 pr-7 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-primary/30 focus:border-primary"
         />
         <ChevronDown size={14} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
@@ -172,7 +172,7 @@ function ContractorSearchInput({
             ))
           ) : (
             <div className="px-3 py-2 text-sm text-gray-400">
-              ไม่พบผู้รับจ้างที่ตรงกัน
+              ไม่พบ — พิมพ์ชื่อผู้รับเงินได้เลย
             </div>
           )}
           {query.trim() && !exactMatch && (
@@ -186,7 +186,7 @@ function ContractorSearchInput({
               }}
             >
               <Plus size={14} />
-              เพิ่ม &apos;{query.trim()}&apos; เป็นผู้รับจ้างใหม่
+              บันทึก &apos;{query.trim()}&apos; เป็นผู้รับเงินประจำ
             </button>
           )}
         </div>
@@ -742,7 +742,7 @@ export default function DisbursementDetailPage() {
                   <option value={1}>1 - ยื่นเรื่องของบ</option>
                   <option value={2}>2 - ขออนุมัติ</option>
                   <option value={3}>3 - เบิกเงินที่ธนาคาร</option>
-                  <option value={4}>4 - นำจ่ายผู้รับจ้าง</option>
+                  <option value={4}>4 - บันทึกการจ่ายเงิน</option>
                 </select>
               </div>
 
@@ -831,7 +831,7 @@ export default function DisbursementDetailPage() {
           <div className="p-6 bg-success/5 border-b">
             <h2 className="text-lg font-semibold text-success flex items-center gap-2">
               <CreditCard size={20} />
-              บันทึกการจ่ายเงินผู้รับจ้าง
+              บันทึกการจ่ายเงิน
             </h2>
             <p className="text-sm text-gray-500 mt-1">กรอกชื่อผู้รับจ้างและระบุการหักภาษี ณ ที่จ่าย (ถ้ามี)</p>
           </div>
@@ -877,7 +877,7 @@ export default function DisbursementDetailPage() {
                                   />
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <label className="text-xs text-gray-500">ผู้รับจ้าง</label>
+                                  <label className="text-xs text-gray-500">ผู้รับเงิน</label>
                                   <ContractorSearchInput
                                     value={payee.payeeName}
                                     contractors={contractors}

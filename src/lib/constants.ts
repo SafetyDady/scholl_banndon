@@ -12,7 +12,7 @@ export const WORKFLOW_STEPS = [
   { number: 1, name: 'ยื่นเรื่องของบ', status: 'DRAFT', requiredRole: 'FINANCE_OFFICER' },
   { number: 2, name: 'ขออนุมัติ', status: 'PENDING_APPROVAL', requiredRole: 'FINANCE_OFFICER', approvalRole: ['VICE_PRINCIPAL', 'PRINCIPAL'] },
   { number: 3, name: 'เบิกเงินที่ธนาคาร', status: 'WITHDRAWN', requiredRole: 'FINANCE_OFFICER' },
-  { number: 4, name: 'นำจ่ายผู้รับจ้าง', status: 'COMPLETED', requiredRole: 'FINANCE_OFFICER' },
+  { number: 4, name: 'บันทึกการจ่ายเงิน', status: 'COMPLETED', requiredRole: 'FINANCE_OFFICER' },
 ] as const
 
 export const STATUS_LABELS: Record<string, { label: string; color: string }> = {
@@ -72,7 +72,7 @@ export const SIDEBAR_SECTIONS: SidebarSection[] = [
       { label: 'ข้อมูลโรงเรียน', icon: 'School', path: '/settings/school-info', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'บัญชีธนาคาร', icon: 'Landmark', path: '/settings/bank-accounts', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'ประเภทเงิน', icon: 'Tags', path: '/settings/budget-types', roles: ['FINANCE_OFFICER', 'ADMIN'] },
-      { label: 'ผู้รับจ้าง', icon: 'UserCheck', path: '/settings/contractors', roles: ['FINANCE_OFFICER', 'ADMIN'] },
+      { label: 'ผู้รับเงิน', icon: 'UserCheck', path: '/settings/contractors', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'รายการรายงานคงเหลือ', icon: 'FileSpreadsheet', path: '/settings/balance-template', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'ตั้งค่า Workflow', icon: 'GitBranch', path: '/settings/workflow', roles: ['FINANCE_OFFICER', 'ADMIN'] },
       { label: 'ผู้ใช้งาน', icon: 'Users', path: '/settings/users', roles: ['ADMIN'] },

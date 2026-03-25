@@ -72,7 +72,7 @@ export default function TaxPage() {
                     วันที่จ่าย
                   </th>
                   <th className="px-4 py-3 text-left text-xs text-gray-500 uppercase tracking-wider font-medium">
-                    ผู้รับจ้าง
+                    ผู้รับเงิน
                   </th>
                   <th className="px-4 py-3 text-right text-xs text-gray-500 uppercase tracking-wider font-medium">
                     ยอดสั่งซื้อ

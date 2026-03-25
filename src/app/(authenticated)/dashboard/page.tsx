@@ -41,10 +41,14 @@ const PIE_COLORS = [
   '#f59e0b', '#06b6d4', '#ec4899', '#f97316',
 ]
 
-const MONTH_NAMES = [
-  'ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.',
-  'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.',
-]
+// ชื่อเดือนตาม index 1-12
+const MONTH_NAMES: Record<number, string> = {
+  1: 'ม.ค.', 2: 'ก.พ.', 3: 'มี.ค.', 4: 'เม.ย.', 5: 'พ.ค.', 6: 'มิ.ย.',
+  7: 'ก.ค.', 8: 'ส.ค.', 9: 'ก.ย.', 10: 'ต.ค.', 11: 'พ.ย.', 12: 'ธ.ค.',
+}
+
+// ลำดับเดือนตามปีงบประมาณ: ต.ค.(10) → ก.ย.(9)
+const FISCAL_MONTH_ORDER = [10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 
 interface StatCardData {
   title: string
@@ -126,9 +130,11 @@ export default function DashboardPage() {
     },
   ]
 
-  const monthlyData = (data?.byMonth ?? []).map((m) => ({
-    name: MONTH_NAMES[m.month - 1],
-    amount: m.netAmount,
+  // เรียงตามปีงบประมาณ (ต.ค. → ก.ย.) แสดงทุกเดือน แม้ไม่มีข้อมูล
+  const byMonthMap = new Map((data?.byMonth ?? []).map((m) => [m.month, m.netAmount]))
+  const monthlyData = FISCAL_MONTH_ORDER.map((m) => ({
+    name: MONTH_NAMES[m],
+    amount: byMonthMap.get(m) ?? 0,
   }))
 
   return (

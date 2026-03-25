@@ -73,7 +73,7 @@ export default function ContractorsPage() {
   }
 
   const handleDelete = async (id: number) => {
-    if (!confirm('ต้องการลบผู้รับจ้างรายนี้หรือไม่?')) return
+    if (!confirm('ต้องการลบผู้รับเงินรายนี้หรือไม่?')) return
     try {
       const res = await fetch(`/api/contractors/${id}`, { method: 'DELETE' })
       if (!res.ok) throw new Error('ลบไม่สำเร็จ')
@@ -112,12 +112,12 @@ export default function ContractorsPage() {
   return (
     <div className="space-y-6">
       <PageHeader
-        title="ผู้รับจ้าง/ผู้รับเหมา"
-        subtitle="จัดการข้อมูลผู้รับจ้างและผู้รับเหมา"
+        title="ผู้รับเงิน"
+        subtitle="จัดการข้อมูลผู้รับเงินประจำ"
         actions={
           <Button onClick={openAdd}>
             <UserPlus size={16} />
-            เพิ่มผู้รับจ้าง
+            เพิ่มผู้รับเงิน
           </Button>
         }
       />
@@ -135,7 +135,7 @@ export default function ContractorsPage() {
           <div className="flex flex-col items-center justify-center py-16">
             <UserCheck size={48} className="text-gray-300" />
             <p className="mt-3 text-sm text-gray-400">
-              ยังไม่มีผู้รับจ้าง กดปุ่ม &quot;เพิ่มผู้รับจ้าง&quot; เพื่อเริ่มต้น
+              ยังไม่มีผู้รับเงิน กดปุ่ม &quot;เพิ่มผู้รับเงิน&quot; เพื่อเริ่มต้น
             </p>
           </div>
         ) : (
@@ -213,12 +213,12 @@ export default function ContractorsPage() {
           />
           <div className="relative bg-white rounded-xl shadow-xl w-full max-w-lg mx-4 p-6">
             <h2 className="text-lg font-semibold text-primary mb-4">
-              {editingId ? 'แก้ไขผู้รับจ้าง' : 'เพิ่มผู้รับจ้าง'}
+              {editingId ? 'แก้ไขผู้รับเงิน' : 'เพิ่มผู้รับเงิน'}
             </h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  ชื่อผู้รับจ้าง <span className="text-red-500">*</span>
+                  ชื่อผู้รับเงิน <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -226,7 +226,7 @@ export default function ContractorsPage() {
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   required
-                  placeholder="ระบุชื่อผู้รับจ้าง"
+                  placeholder="ระบุชื่อผู้รับเงิน"
                 />
               </div>
               <div>
@@ -250,7 +250,7 @@ export default function ContractorsPage() {
                   onChange={(e) => setForm({ ...form, address: e.target.value })}
                   className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary"
                   rows={2}
-                  placeholder="ที่อยู่ผู้รับจ้าง"
+                  placeholder="ที่อยู่ผู้รับเงิน"
                 />
               </div>
               <div>
