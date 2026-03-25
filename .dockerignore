@@ -1,3 +1,10 @@
 node_modules
 .next
 .env
+.env.local
+*.md
+.git
+test_*
+import_data.json
+prisma/backup_*
+scripts/
